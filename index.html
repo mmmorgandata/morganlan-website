@@ -131,13 +131,13 @@
 
     .nav-links {
       display: flex;
-      gap: 4px;
+      gap: 8px;
       list-style: none;
       flex: 1;
       justify-content: center;
     }
     .nav-links a {
-      font-size: 17px;
+      font-size: 13px;
       font-weight: 500;
       color: var(--muted);
       padding: 8px 18px;
@@ -1046,7 +1046,7 @@
 </nav>
 
 <!-- Mobile floating contact button -->
-<a class="mobile-fab" id="mobile-fab" aria-label="Contact" style="display:none;">
+<a class="mobile-fab" id="mobile-fab" aria-label="Contact">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
     <polyline points="22,6 12,13 2,6"/>
@@ -1633,13 +1633,9 @@
     navPill.classList.toggle('faded', window.scrollY > 60);
   }, { passive: true });
 
-  // Mobile FAB
+  // FAB — show on all screen sizes
   const fab = document.getElementById('mobile-fab');
-  function updateFab() {
-    fab.style.display = window.innerWidth <= 600 ? 'flex' : 'none';
-  }
-  updateFab();
-  window.addEventListener('resize', updateFab);
+  fab.style.display = 'flex';
   fab.addEventListener('click', () => showSection('contact'));
 
   // Show About Me on load
