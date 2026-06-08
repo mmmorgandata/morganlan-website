@@ -909,6 +909,24 @@
       font-size: 13px;
     }
 
+    /* ── Floating contact button (all screens) ────────────────── */
+    .mobile-fab {
+      display: flex;
+      position: fixed;
+      bottom: 28px;
+      right: 20px;
+      width: 52px; height: 52px;
+      background: var(--rausch);
+      border-radius: 50%;
+      align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(255,56,92,.4), 0 2px 6px rgba(0,0,0,.15);
+      z-index: 200;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+    }
+    .mobile-fab:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(255,56,92,.5); }
+    .mobile-fab svg { width: 22px; height: 22px; color: #fff; }
+
     /* ── Responsive: tablet ───────────────────────────────────── */
     @media (max-width: 900px) {
       section { padding: 60px 24px; }
@@ -970,23 +988,6 @@
         white-space: nowrap;
       }
       .nav-cta { display: none !important; }
-      /* Floating contact button */
-      .mobile-fab {
-        display: flex;
-        position: fixed;
-        bottom: 28px;
-        right: 20px;
-        width: 52px; height: 52px;
-        background: var(--rausch);
-        border-radius: 50%;
-        align-items: center; justify-content: center;
-        box-shadow: 0 4px 16px rgba(255,56,92,.4), 0 2px 6px rgba(0,0,0,.15);
-        z-index: 200;
-        cursor: pointer;
-        transition: transform .15s, box-shadow .15s;
-      }
-      .mobile-fab:hover { transform: scale(1.08); box-shadow: 0 6px 20px rgba(255,56,92,.5); }
-      .mobile-fab svg { width: 22px; height: 22px; color: #fff; }
 
       /* Sections — push content below 灵动岛 (top:10px + height:46px + gap) */
       section { padding: 64px 20px 32px; }
