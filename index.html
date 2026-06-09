@@ -748,15 +748,13 @@
       width: fit-content;
     }
 
-    /* ── 5. Beyond — Flashcard Carousel ─────────────────────── */
-    #interests { }
+    /* ── 4b. Lab — Coverflow Flashcard ──────────────────────── */
     .fc-wrapper { display: flex; flex-direction: column; gap: 24px; }
     .fc-row { display: flex; align-items: center; gap: 20px; }
-    /* Coverflow stage */
     .fc-stage {
       flex: 1;
       position: relative;
-      height: 300px;
+      height: 360px;
       perspective: 1400px;
       overflow: visible;
     }
@@ -767,11 +765,10 @@
       border: 1px solid var(--hairline);
       border-radius: var(--r-lg);
       overflow: hidden;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      flex-direction: column;
       transition: transform .55s cubic-bezier(.4,0,.2,1), opacity .55s, box-shadow .4s;
       cursor: pointer;
-      -webkit-box-reflect: below 6px -webkit-linear-gradient(transparent 65%, rgba(200,200,200,0.18));
     }
     .fc-card.active {
       transform: translateX(0) rotateY(0deg) scale(1);
@@ -789,29 +786,42 @@
       z-index: 2;
       opacity: 0.6;
     }
-    .fc-visual {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-      display: block;
-    }
     .fc-visual-emoji {
+      height: 160px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 72px;
+      font-size: 64px;
+      flex-shrink: 0;
     }
     .fc-body {
-      padding: 32px 28px;
+      padding: 24px 28px;
       display: flex;
       flex-direction: column;
-      justify-content: center;
       gap: 10px;
+      flex: 1;
     }
-    .fc-icon { font-size: 26px; }
-    .fc-name { font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+    .fc-icon { font-size: 24px; }
+    .fc-name { font-size: 19px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
     .fc-desc { font-size: 14px; color: var(--body); line-height: 1.65; }
+
+    /* ── 5. Beyond ───────────────────────────────────────────── */
+    #interests { }
+    .interests-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .interest-card {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      transition: box-shadow .2s, transform .2s;
+    }
+    .interest-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
+    .interest-card.wide { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; }
+    .interest-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; object-position: center top; display: block; }
+    .interest-body { padding: 24px; }
+    .interest-icon { font-size: 24px; margin-bottom: 10px; }
+    .interest-name { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+    .interest-desc { font-size: 14px; color: var(--body); line-height: 1.6; }
     .interest-link {
       display: inline-flex;
       align-items: center;
@@ -819,7 +829,7 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--rausch);
-      margin-top: 6px;
+      margin-top: 14px;
       transition: gap .15s;
     }
     .interest-link:hover { gap: 10px; }
@@ -1002,17 +1012,17 @@
       .projects-grid { grid-template-columns: 1fr; }
       .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
       .side-grid { grid-template-columns: 1fr; }
-      .fc-stage { height: 360px; }
-      .fc-card { grid-template-columns: 1fr; }
+      .fc-stage { height: 340px; }
       .fc-card.fc-left  { transform: translateX(-55%) rotateY(28deg) scale(0.72); }
       .fc-card.fc-right { transform: translateX(55%) rotateY(-28deg) scale(0.72); }
-      .fc-visual { height: 180px; width: 100%; object-fit: cover; }
-      .fc-visual-emoji { height: 160px; font-size: 52px; }
+      .fc-visual-emoji { height: 130px; font-size: 48px; }
       .fc-body { padding: 16px 18px; gap: 8px; }
-      .fc-name { font-size: 17px; }
-      .fc-desc { font-size: 13px; }
+      .fc-name { font-size: 16px; }
+      .fc-desc { font-size: 12px; }
       .fc-arrow { width: 36px; height: 36px; }
       .fc-arrow svg { width: 14px; height: 14px; }
+      .interests-grid { grid-template-columns: 1fr; }
+      .interest-card.wide { grid-column: span 1; grid-template-columns: 1fr; }
       footer { flex-direction: column; gap: 8px; text-align: center; }
       /* Contact */
       .contact-inner { grid-template-columns: 1fr; padding: 40px 24px; height: auto; gap: 32px; }
@@ -1069,7 +1079,7 @@
       .about-meta-section { padding: 20px 20px 32px; }
       .edu-stamps { flex-direction: column; }
       .stamp-scene { width: 100%; height: 200px; }
-      .edu-stamp-item:first-child .stamp-scene { max-width: 340px; }  /* UW — wider */
+      .edu-stamp-item:first-child .stamp-scene { max-width: 280px; }  /* UW */
       .edu-stamp-item:last-child  .stamp-scene { max-width: 260px; }  /* SCUT — narrower */
       .section-title { font-size: 26px; }
 
@@ -1509,47 +1519,6 @@
   <div class="section-label">Personal builds</div>
   <h2 class="section-title">Side Works</h2>
 
-  <div class="side-grid">
-
-    <div class="side-card">
-      <div class="wip-badge">Live</div>
-      <div class="project-emoji">👶</div>
-      <div class="project-name">ParentPass</div>
-      <p class="project-desc">WeChat-deployed travel companion for Chinese parents abroad. Solo-built from PRD to prod.</p>
-      <div class="project-tags" style="margin-top:auto;">
-        <span class="tech-tag">React</span>
-        <span class="tech-tag">PWA</span>
-        <span class="tech-tag">Claude API</span>
-      </div>
-    </div>
-
-    <div class="side-card">
-      <div class="wip-badge">Collab</div>
-      <div class="project-emoji">🎵</div>
-      <div class="project-name">Music Website</div>
-      <p class="project-desc">Co-built with friends — a music discovery and sharing platform. Design-led collab project.</p>
-      <div class="project-tags" style="margin-top:auto;">
-        <span class="tech-tag">Web</span>
-        <span class="tech-tag">Music</span>
-      </div>
-    </div>
-
-    <div class="side-card">
-      <div class="wip-badge">Vibe coding</div>
-      <div class="project-emoji">⚡</div>
-      <div class="project-name">More coming soon</div>
-      <p class="project-desc">Always prototyping. Check GitHub for the latest experiments.</p>
-      <a href="https://github.com/mmmorgandata" target="_blank" style="margin-top:auto; font-size:13px; font-weight:600; color:var(--rausch);">github.com/mmmorgandata ↗</a>
-    </div>
-
-  </div>
-</section>
-
-<!-- ── 5. Beyond ── -->
-<section id="interests">
-  <div class="section-label">Beyond work</div>
-  <h2 class="section-title">My Beyond</h2>
-
   <div class="fc-wrapper">
     <div class="fc-row">
       <button class="fc-arrow fc-prev" aria-label="Previous">
@@ -1557,37 +1526,45 @@
       </button>
       <div class="fc-stage">
 
-          <!-- Card 1: Photography — starts active -->
-          <div class="fc-card active">
-            <img class="fc-visual" src="images/photo3.jpg" alt="Photography" />
-            <div class="fc-body">
-              <div class="fc-icon">📷</div>
-              <div class="fc-name">Photography</div>
-              <p class="fc-desc">I shoot film and digital — mostly people, street, and travel. The camera is always in my bag.</p>
-              <a href="https://www.instagram.com/capybaraplanet/" target="_blank" class="interest-link">@capybaraplanet on Instagram →</a>
+        <!-- Card 1: ParentPass — active -->
+        <div class="fc-card active">
+          <div class="fc-visual-emoji" style="background:linear-gradient(135deg,#fff5f6,#ffd6db);">👶</div>
+          <div class="fc-body">
+            <div class="wip-badge">Live</div>
+            <div class="fc-name">ParentPass</div>
+            <p class="fc-desc">WeChat-deployed travel companion for Chinese parents abroad. Solo-built from PRD to prod.</p>
+            <div class="project-tags">
+              <span class="tech-tag">React</span>
+              <span class="tech-tag">PWA</span>
+              <span class="tech-tag">Claude API</span>
             </div>
           </div>
+        </div>
 
-          <!-- Card 2: Tennis — starts right -->
-          <div class="fc-card fc-right">
-            <div class="fc-visual-emoji" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">🎾</div>
-            <div class="fc-body">
-              <div class="fc-icon">🎾</div>
-              <div class="fc-name">Tennis</div>
-              <p class="fc-desc">Caddie volunteer at a community tennis club — taught kids the basics and a lot about patience.</p>
+        <!-- Card 2: Music Website — right -->
+        <div class="fc-card fc-right">
+          <div class="fc-visual-emoji" style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);">🎵</div>
+          <div class="fc-body">
+            <div class="wip-badge">Collab</div>
+            <div class="fc-name">Music Website</div>
+            <p class="fc-desc">Co-built with friends — a music discovery and sharing platform. Design-led collab project.</p>
+            <div class="project-tags">
+              <span class="tech-tag">Web</span>
+              <span class="tech-tag">Music</span>
             </div>
           </div>
+        </div>
 
-          <!-- Card 3: Hiking & Travel — starts left -->
-          <div class="fc-card fc-left">
-            <img class="fc-visual" src="images/photo1.jpg" alt="Travel" />
-            <div class="fc-body">
-              <div class="fc-icon">🗺️</div>
-              <div class="fc-name">Hiking & Travel</div>
-              <p class="fc-desc">Always planning the next trip. The camera and hiking boots are always ready.</p>
-              <a href="https://www.instagram.com/capybaraplanet/" target="_blank" class="interest-link">See travel photos on Instagram →</a>
-            </div>
+        <!-- Card 3: More coming soon — left -->
+        <div class="fc-card fc-left">
+          <div class="fc-visual-emoji" style="background:linear-gradient(135deg,#fffbeb,#fef3c7);">⚡</div>
+          <div class="fc-body">
+            <div class="wip-badge">Vibe coding</div>
+            <div class="fc-name">More coming soon</div>
+            <p class="fc-desc">Always prototyping. Check GitHub for the latest experiments.</p>
+            <a href="https://github.com/mmmorgandata" target="_blank" class="interest-link">github.com/mmmorgandata →</a>
           </div>
+        </div>
 
       </div>
       <button class="fc-arrow fc-next" aria-label="Next">
@@ -1600,6 +1577,52 @@
       <button class="fc-dot" aria-label="Card 3"></button>
     </div>
   </div>
+</section>
+
+<!-- ── 5. Beyond ── -->
+<section id="interests">
+  <div class="section-label">Beyond work</div>
+  <h2 class="section-title">My Beyond</h2>
+
+  <div class="interests-grid">
+
+    <!-- Photography -->
+    <div class="interest-card">
+      <img class="interest-img" src="images/photo3.jpg" alt="Photography" />
+      <div class="interest-body">
+        <div class="interest-icon">📷</div>
+        <div class="interest-name">Photography</div>
+        <p class="interest-desc">I shoot film and digital — mostly people, street, and travel. The camera is always in my bag.</p>
+        <a href="https://www.instagram.com/capybaraplanet/" target="_blank" class="interest-link">@capybaraplanet on Instagram →</a>
+      </div>
+    </div>
+
+    <!-- Tennis -->
+    <div class="interest-card">
+      <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; font-size:80px;">🎾</div>
+      <div class="interest-body">
+        <div class="interest-icon">🎾</div>
+        <div class="interest-name">Tennis</div>
+        <p class="interest-desc">Caddie volunteer at a community tennis club — taught kids the basics and a lot about patience.</p>
+      </div>
+    </div>
+
+    <!-- Travel -->
+    <div class="interest-card wide">
+      <div style="padding:28px; display:flex; flex-direction:column; gap:12px; justify-content:center;">
+        <div class="interest-icon">🗺️</div>
+        <div class="interest-name">Hiking & Travel</div>
+        <p class="interest-desc">
+          Always planning the next trip. The map below marks places I've been — click pins to see photos.
+          <br><br>
+          <em style="color:var(--muted); font-size:13px;">Interactive travel map coming soon.</em>
+        </p>
+        <a href="https://www.instagram.com/capybaraplanet/" target="_blank" class="interest-link">See travel photos on Instagram →</a>
+      </div>
+      <div>
+        <img class="interest-img" src="images/photo1.jpg" alt="Travel" style="border-radius:0;" />
+      </div>
+    </div>
 
   </div>
 </section>
