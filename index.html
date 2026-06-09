@@ -81,12 +81,12 @@
       justify-content: space-between;
       width: min(calc(100% - 32px), 1140px);
       box-shadow: 0 4px 24px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
-      transition: transform .35s cubic-bezier(.4,0,.2,1), background .4s, border-color .4s, box-shadow .4s;
+      transition: transform .8s cubic-bezier(.25,0.1,.25,1), background .4s, border-color .4s, box-shadow .4s;
       transform-origin: center top;
     }
     /* Dynamic Island: shrink on scroll down, restore on scroll up */
     .nav-pill.pill-shrink {
-      transform: scale(0.84);
+      transform: scale(0.93);
     }
     /* dark mode pill */
     body.dark .nav-pill {
@@ -1055,7 +1055,7 @@
         height: 44px;
         border-radius: 9999px;  /* 灵动岛 pill shape */
         padding: 0 6px;
-        transition: transform .35s cubic-bezier(.4,0,.2,1), background .4s, border-color .4s;
+        transition: transform .8s cubic-bezier(.25,0.1,.25,1), background .4s, border-color .4s;
       }
       .nav-left { padding-right: 6px; margin-right: 4px; border-right: none; }
       #theme-toggle { width: 28px !important; height: 28px !important; }
@@ -1086,7 +1086,7 @@
       .about-meta-section { padding: 20px 20px 32px; }
       .edu-stamps { flex-direction: column; }
       .stamp-scene { width: 100%; height: 200px; }
-      .edu-stamp-item:first-child .stamp-scene { max-width: 280px; }  /* UW */
+      .edu-stamp-item:first-child .stamp-scene { max-width: 255px; }  /* UW */
       .edu-stamp-item:last-child  .stamp-scene { max-width: 260px; }  /* SCUT — narrower */
       .section-title { font-size: 26px; }
 
