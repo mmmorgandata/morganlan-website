@@ -81,7 +81,12 @@
       justify-content: space-between;
       width: min(calc(100% - 32px), 1140px);
       box-shadow: 0 4px 24px rgba(0,0,0,.10), 0 1px 4px rgba(0,0,0,.06);
-      transition: background .4s, border-color .4s, box-shadow .4s;
+      transition: transform .35s cubic-bezier(.4,0,.2,1), background .4s, border-color .4s, box-shadow .4s;
+      transform-origin: center top;
+    }
+    /* Dynamic Island: shrink on scroll down, restore on scroll up */
+    .nav-pill.pill-shrink {
+      transform: scale(0.84);
     }
     /* dark mode pill */
     body.dark .nav-pill {
@@ -1049,20 +1054,8 @@
         width: calc(100% - 6px);
         height: 44px;
         border-radius: 9999px;  /* 灵动岛 pill shape */
-        transform-origin: center top;
         padding: 0 6px;
-        transition: transform .35s cubic-bezier(.4,0,.2,1), background .4s, border-color .4s, opacity .35s;
-      }
-      /* Instagram-style Dynamic Island: shrink on scroll down, expand on scroll up */
-      .nav-pill.pill-shrink {
-        transform: scale(0.82);
-        opacity: 0.55;
-        background: rgba(255,255,255,0.35) !important;
-        border-color: rgba(0,0,0,0.03) !important;
-        box-shadow: none !important;
-      }
-      body.dark .nav-pill.pill-shrink {
-        background: rgba(18,18,18,0.35) !important;
+        transition: transform .35s cubic-bezier(.4,0,.2,1), background .4s, border-color .4s;
       }
       .nav-left { padding-right: 6px; margin-right: 4px; border-right: none; }
       #theme-toggle { width: 28px !important; height: 28px !important; }
@@ -1741,25 +1734,18 @@
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
   });
 
-  // Scroll — Dynamic Island on mobile, fade on desktop
+  // Scroll — Dynamic Island (all screens)
   const navPill = document.querySelector('.nav-pill');
   let lastScrollY = 0;
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
-    if (window.innerWidth <= 600) {
-      if (y <= 8) {
-        navPill.classList.remove('pill-shrink', 'faded');
-      } else if (y > lastScrollY) {
-        // scrolling down — shrink
-        navPill.classList.add('pill-shrink');
-        navPill.classList.remove('faded');
-      } else {
-        // scrolling up — expand, semi-transparent
-        navPill.classList.remove('pill-shrink');
-        navPill.classList.add('faded');
-      }
+    navPill.classList.toggle('faded', y > 60);
+    if (y <= 5) {
+      navPill.classList.remove('pill-shrink');
+    } else if (y > lastScrollY) {
+      navPill.classList.add('pill-shrink');    // scroll down → shrink
     } else {
-      navPill.classList.toggle('faded', y > 60);
+      navPill.classList.remove('pill-shrink'); // scroll up → restore
     }
     lastScrollY = y;
   }, { passive: true });
