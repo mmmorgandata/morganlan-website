@@ -750,18 +750,44 @@
 
     /* ── 5. Beyond — Flashcard Carousel ─────────────────────── */
     #interests { }
-    .fc-wrapper { display: flex; flex-direction: column; gap: 20px; }
-    .fc-row { display: flex; align-items: center; gap: 16px; }
-    .fc-track { flex: 1; overflow: hidden; border-radius: var(--r-lg); }
-    .fc-inner { display: flex; transition: transform .45s cubic-bezier(.4,0,.2,1); }
+    .fc-wrapper { display: flex; flex-direction: column; gap: 24px; }
+    .fc-row { display: flex; align-items: center; gap: 20px; }
+    /* Coverflow stage */
+    .fc-stage {
+      flex: 1;
+      position: relative;
+      height: 300px;
+      perspective: 1400px;
+      overflow: visible;
+    }
     .fc-card {
-      min-width: 100%;
+      position: absolute;
+      inset: 0;
       background: var(--canvas);
       border: 1px solid var(--hairline);
       border-radius: var(--r-lg);
       overflow: hidden;
       display: grid;
       grid-template-columns: 1fr 1fr;
+      transition: transform .55s cubic-bezier(.4,0,.2,1), opacity .55s, box-shadow .4s;
+      cursor: pointer;
+      -webkit-box-reflect: below 6px -webkit-linear-gradient(transparent 65%, rgba(200,200,200,0.18));
+    }
+    .fc-card.active {
+      transform: translateX(0) rotateY(0deg) scale(1);
+      z-index: 3;
+      opacity: 1;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.13), 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .fc-card.fc-left {
+      transform: translateX(-62%) rotateY(30deg) scale(0.76);
+      z-index: 2;
+      opacity: 0.6;
+    }
+    .fc-card.fc-right {
+      transform: translateX(62%) rotateY(-30deg) scale(0.76);
+      z-index: 2;
+      opacity: 0.6;
     }
     .fc-visual {
       width: 100%;
@@ -774,19 +800,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 80px;
-      min-height: 280px;
+      font-size: 72px;
     }
     .fc-body {
-      padding: 40px 36px;
+      padding: 32px 28px;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 12px;
+      gap: 10px;
     }
-    .fc-icon { font-size: 28px; }
-    .fc-name { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
-    .fc-desc { font-size: 15px; color: var(--body); line-height: 1.65; }
+    .fc-icon { font-size: 26px; }
+    .fc-name { font-size: 20px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+    .fc-desc { font-size: 14px; color: var(--body); line-height: 1.65; }
     .interest-link {
       display: inline-flex;
       align-items: center;
@@ -977,12 +1002,17 @@
       .projects-grid { grid-template-columns: 1fr; }
       .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
       .side-grid { grid-template-columns: 1fr; }
+      .fc-stage { height: 360px; }
       .fc-card { grid-template-columns: 1fr; }
-      .fc-visual { aspect-ratio: 16/9; height: auto; }
-      .fc-visual-emoji { min-height: 160px; font-size: 56px; }
-      .fc-body { padding: 24px 20px; }
+      .fc-card.fc-left  { transform: translateX(-55%) rotateY(28deg) scale(0.72); }
+      .fc-card.fc-right { transform: translateX(55%) rotateY(-28deg) scale(0.72); }
+      .fc-visual { height: 180px; width: 100%; object-fit: cover; }
+      .fc-visual-emoji { height: 160px; font-size: 52px; }
+      .fc-body { padding: 16px 18px; gap: 8px; }
+      .fc-name { font-size: 17px; }
+      .fc-desc { font-size: 13px; }
       .fc-arrow { width: 36px; height: 36px; }
-      .fc-arrow svg { width: 15px; height: 15px; }
+      .fc-arrow svg { width: 14px; height: 14px; }
       footer { flex-direction: column; gap: 8px; text-align: center; }
       /* Contact */
       .contact-inner { grid-template-columns: 1fr; padding: 40px 24px; height: auto; gap: 32px; }
@@ -1525,11 +1555,10 @@
       <button class="fc-arrow fc-prev" aria-label="Previous">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
-      <div class="fc-track">
-        <div class="fc-inner">
+      <div class="fc-stage">
 
-          <!-- Card 1: Photography -->
-          <div class="fc-card">
+          <!-- Card 1: Photography — starts active -->
+          <div class="fc-card active">
             <img class="fc-visual" src="images/photo3.jpg" alt="Photography" />
             <div class="fc-body">
               <div class="fc-icon">📷</div>
@@ -1539,8 +1568,8 @@
             </div>
           </div>
 
-          <!-- Card 2: Tennis -->
-          <div class="fc-card">
+          <!-- Card 2: Tennis — starts right -->
+          <div class="fc-card fc-right">
             <div class="fc-visual-emoji" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">🎾</div>
             <div class="fc-body">
               <div class="fc-icon">🎾</div>
@@ -1549,8 +1578,8 @@
             </div>
           </div>
 
-          <!-- Card 3: Hiking & Travel -->
-          <div class="fc-card">
+          <!-- Card 3: Hiking & Travel — starts left -->
+          <div class="fc-card fc-left">
             <img class="fc-visual" src="images/photo1.jpg" alt="Travel" />
             <div class="fc-body">
               <div class="fc-icon">🗺️</div>
@@ -1560,7 +1589,6 @@
             </div>
           </div>
 
-        </div>
       </div>
       <button class="fc-arrow fc-next" aria-label="Next">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1680,19 +1708,28 @@
     navPill.classList.toggle('faded', window.scrollY > 60);
   }, { passive: true });
 
-  // Flashcard carousel
-  const fcInner = document.querySelector('.fc-inner');
+  // Flashcard carousel — coverflow
   const fcCards = document.querySelectorAll('.fc-card');
   const fcDots  = document.querySelectorAll('.fc-dot');
+  const fcN = fcCards.length;
   let fcCurrent = 0;
-  function fcGoTo(index) {
-    fcCurrent = ((index % fcCards.length) + fcCards.length) % fcCards.length;
-    fcInner.style.transform = `translateX(-${fcCurrent * 100}%)`;
+  function fcUpdate() {
+    fcCards.forEach((card, i) => {
+      card.classList.remove('active', 'fc-left', 'fc-right');
+      if (i === fcCurrent) card.classList.add('active');
+      else if (i === (fcCurrent - 1 + fcN) % fcN) card.classList.add('fc-left');
+      else card.classList.add('fc-right');
+    });
     fcDots.forEach((d, i) => d.classList.toggle('active', i === fcCurrent));
+  }
+  function fcGoTo(index) {
+    fcCurrent = ((index % fcN) + fcN) % fcN;
+    fcUpdate();
   }
   document.querySelector('.fc-prev').addEventListener('click', () => fcGoTo(fcCurrent - 1));
   document.querySelector('.fc-next').addEventListener('click', () => fcGoTo(fcCurrent + 1));
   fcDots.forEach((d, i) => d.addEventListener('click', () => fcGoTo(i)));
+  fcCards.forEach((card, i) => card.addEventListener('click', () => { if (!card.classList.contains('active')) fcGoTo(i); }));
 
   // FAB — show on all screen sizes
   const fab = document.getElementById('mobile-fab');
