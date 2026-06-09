@@ -748,30 +748,45 @@
       width: fit-content;
     }
 
-    /* ── 5. Beyond ──────────────────────────────────────────── */
+    /* ── 5. Beyond — Flashcard Carousel ─────────────────────── */
     #interests { }
-    .interests-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
-    .interest-card {
+    .fc-wrapper { display: flex; flex-direction: column; gap: 20px; }
+    .fc-row { display: flex; align-items: center; gap: 16px; }
+    .fc-track { flex: 1; overflow: hidden; border-radius: var(--r-lg); }
+    .fc-inner { display: flex; transition: transform .45s cubic-bezier(.4,0,.2,1); }
+    .fc-card {
+      min-width: 100%;
       background: var(--canvas);
       border: 1px solid var(--hairline);
       border-radius: var(--r-lg);
       overflow: hidden;
-      transition: box-shadow .2s, transform .2s;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
     }
-    .interest-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-3px); }
-    .interest-card.wide { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; }
-    .interest-img {
+    .fc-visual {
       width: 100%;
-      aspect-ratio: 4/3;
+      height: 100%;
       object-fit: cover;
       object-position: center top;
       display: block;
     }
-    .interest-img.tall { aspect-ratio: 3/4; }
-    .interest-body { padding: 24px; }
-    .interest-icon { font-size: 24px; margin-bottom: 10px; }
-    .interest-name { font-size: 18px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
-    .interest-desc { font-size: 14px; color: var(--body); line-height: 1.6; }
+    .fc-visual-emoji {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 80px;
+      min-height: 280px;
+    }
+    .fc-body {
+      padding: 40px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+    }
+    .fc-icon { font-size: 28px; }
+    .fc-name { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
+    .fc-desc { font-size: 15px; color: var(--body); line-height: 1.65; }
     .interest-link {
       display: inline-flex;
       align-items: center;
@@ -779,10 +794,33 @@
       font-size: 13px;
       font-weight: 600;
       color: var(--rausch);
-      margin-top: 14px;
+      margin-top: 6px;
       transition: gap .15s;
     }
     .interest-link:hover { gap: 10px; }
+    .fc-arrow {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 1.5px solid var(--hairline);
+      background: var(--canvas);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: var(--ink);
+      transition: border-color .15s, box-shadow .15s, transform .15s;
+    }
+    .fc-arrow:hover { border-color: var(--ink); box-shadow: var(--shadow); transform: scale(1.05); }
+    .fc-arrow svg { width: 18px; height: 18px; }
+    .fc-dots { display: flex; justify-content: center; gap: 8px; }
+    .fc-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--hairline);
+      cursor: pointer;
+      border: none; padding: 0;
+      transition: background .2s, transform .2s;
+    }
+    .fc-dot.active { background: var(--rausch); transform: scale(1.3); }
 
     /* Travel map placeholder */
     .travel-map-placeholder {
@@ -939,8 +977,12 @@
       .projects-grid { grid-template-columns: 1fr; }
       .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
       .side-grid { grid-template-columns: 1fr; }
-      .interests-grid { grid-template-columns: 1fr; }
-      .interest-card.wide { grid-column: span 1; grid-template-columns: 1fr; }
+      .fc-card { grid-template-columns: 1fr; }
+      .fc-visual { aspect-ratio: 16/9; height: auto; }
+      .fc-visual-emoji { min-height: 160px; font-size: 56px; }
+      .fc-body { padding: 24px 20px; }
+      .fc-arrow { width: 36px; height: 36px; }
+      .fc-arrow svg { width: 15px; height: 15px; }
       footer { flex-direction: column; gap: 8px; text-align: center; }
       /* Contact */
       .contact-inner { grid-template-columns: 1fr; padding: 40px 24px; height: auto; gap: 32px; }
@@ -1478,58 +1520,58 @@
   <div class="section-label">Beyond work</div>
   <h2 class="section-title">My Beyond</h2>
 
-  <div class="interests-grid">
+  <div class="fc-wrapper">
+    <div class="fc-row">
+      <button class="fc-arrow fc-prev" aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="fc-track">
+        <div class="fc-inner">
 
-    <!-- Photography -->
-    <div class="interest-card">
-      <img class="interest-img" src="images/photo3.jpg" alt="Photography" />
-      <div class="interest-body">
-        <div class="interest-icon">📷</div>
-        <div class="interest-name">Photography</div>
-        <p class="interest-desc">
-          I shoot film and digital — mostly people, street, and travel. The camera is always in my bag.
-        </p>
-        <a href="https://www.instagram.com/capybaraplanet/" target="_blank" class="interest-link">
-          @capybaraplanet on Instagram →
-        </a>
-      </div>
-    </div>
+          <!-- Card 1: Photography -->
+          <div class="fc-card">
+            <img class="fc-visual" src="images/photo3.jpg" alt="Photography" />
+            <div class="fc-body">
+              <div class="fc-icon">📷</div>
+              <div class="fc-name">Photography</div>
+              <p class="fc-desc">I shoot film and digital — mostly people, street, and travel. The camera is always in my bag.</p>
+              <a href="https://www.instagram.com/capybaraplanet/" target="_blank" class="interest-link">@capybaraplanet on Instagram →</a>
+            </div>
+          </div>
 
-    <!-- Tennis -->
-    <div class="interest-card">
-      <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; font-size:80px;">🎾</div>
-      <div class="interest-body">
-        <div class="interest-icon">🎾</div>
-        <div class="interest-name">Tennis</div>
-        <p class="interest-desc">
-          Caddie volunteer at a community tennis club — taught kids the basics and a lot about patience.
-        </p>
-      </div>
-    </div>
+          <!-- Card 2: Tennis -->
+          <div class="fc-card">
+            <div class="fc-visual-emoji" style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);">🎾</div>
+            <div class="fc-body">
+              <div class="fc-icon">🎾</div>
+              <div class="fc-name">Tennis</div>
+              <p class="fc-desc">Caddie volunteer at a community tennis club — taught kids the basics and a lot about patience.</p>
+            </div>
+          </div>
 
-    <!-- Travel map -->
-    <div class="interest-card wide">
-      <div style="padding:28px; display:flex; flex-direction:column; gap:12px; justify-content:center;">
-        <div class="interest-icon">🗺️</div>
-        <div class="interest-name">Hiking & Travel</div>
-        <p class="interest-desc">
-          Always planning the next trip. The map below marks places I've been — click pins to see photos.
-          <br><br>
-          <em style="color:var(--muted); font-size:13px;">Interactive travel map coming soon.</em>
-        </p>
-        <a href="https://www.instagram.com/capybaraplanet/" target="_blank" class="interest-link">
-          See travel photos on Instagram →
-        </a>
-      </div>
-      <div>
-        <div class="travel-map-placeholder">
-          <div class="map-icon">🌍</div>
-          <div style="font-weight:600; color:var(--ink);">Travel Map</div>
-          <div>Interactive map with photo pins — coming soon</div>
+          <!-- Card 3: Hiking & Travel -->
+          <div class="fc-card">
+            <img class="fc-visual" src="images/photo1.jpg" alt="Travel" />
+            <div class="fc-body">
+              <div class="fc-icon">🗺️</div>
+              <div class="fc-name">Hiking & Travel</div>
+              <p class="fc-desc">Always planning the next trip. The camera and hiking boots are always ready.</p>
+              <a href="https://www.instagram.com/capybaraplanet/" target="_blank" class="interest-link">See travel photos on Instagram →</a>
+            </div>
+          </div>
+
         </div>
-        <img class="interest-img" src="images/photo1.jpg" alt="Travel" style="border-radius:0; margin-top:8px;" />
       </div>
+      <button class="fc-arrow fc-next" aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
     </div>
+    <div class="fc-dots">
+      <button class="fc-dot active" aria-label="Card 1"></button>
+      <button class="fc-dot" aria-label="Card 2"></button>
+      <button class="fc-dot" aria-label="Card 3"></button>
+    </div>
+  </div>
 
   </div>
 </section>
@@ -1637,6 +1679,20 @@
   window.addEventListener('scroll', () => {
     navPill.classList.toggle('faded', window.scrollY > 60);
   }, { passive: true });
+
+  // Flashcard carousel
+  const fcInner = document.querySelector('.fc-inner');
+  const fcCards = document.querySelectorAll('.fc-card');
+  const fcDots  = document.querySelectorAll('.fc-dot');
+  let fcCurrent = 0;
+  function fcGoTo(index) {
+    fcCurrent = ((index % fcCards.length) + fcCards.length) % fcCards.length;
+    fcInner.style.transform = `translateX(-${fcCurrent * 100}%)`;
+    fcDots.forEach((d, i) => d.classList.toggle('active', i === fcCurrent));
+  }
+  document.querySelector('.fc-prev').addEventListener('click', () => fcGoTo(fcCurrent - 1));
+  document.querySelector('.fc-next').addEventListener('click', () => fcGoTo(fcCurrent + 1));
+  fcDots.forEach((d, i) => d.addEventListener('click', () => fcGoTo(i)));
 
   // FAB — show on all screen sizes
   const fab = document.getElementById('mobile-fab');
