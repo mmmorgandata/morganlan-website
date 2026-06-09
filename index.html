@@ -47,6 +47,8 @@
       background: var(--canvas);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden; /* prevent horizontal overflow from coverflow cards */
+      -webkit-text-size-adjust: 100%; /* prevent iOS Safari from auto-scaling text on viewport change */
+      text-size-adjust: 100%;
     }
     a { color: inherit; text-decoration: none; }
     img { display: block; max-width: 100%; }
@@ -1014,8 +1016,8 @@
       .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
       .side-grid { grid-template-columns: 1fr; }
       .fc-stage { height: 400px; }
-      .fc-card.fc-left  { transform: translateX(-55%) rotateY(28deg) scale(0.72); }
-      .fc-card.fc-right { transform: translateX(55%) rotateY(-28deg) scale(0.72); }
+      .fc-card.fc-left  { transform: translateX(-38%) rotateY(25deg) scale(0.7); }
+      .fc-card.fc-right { transform: translateX(38%) rotateY(-25deg) scale(0.7); }
       .fc-visual-emoji { height: 130px; font-size: 48px; }
       .fc-body { padding: 16px 18px; gap: 8px; }
       .fc-name { font-size: 16px; }
