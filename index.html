@@ -874,12 +874,13 @@
     .photo-strip.grabbing { cursor: grabbing; }
     .photo-strip-track {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       padding-bottom: 4px;
       width: max-content;
     }
     .photo-strip-item {
-      height: 420px;
+      width: 240px;
+      height: 320px;
       flex-shrink: 0;
       overflow: hidden;
       border-radius: 6px;
@@ -887,13 +888,14 @@
       position: relative;
     }
     .photo-strip-item img {
+      width: 100%;
       height: 100%;
-      width: auto;
       display: block;
       object-fit: cover;
+      object-position: center;
       transition: transform .4s ease, opacity .2s;
     }
-    .photo-strip-item:hover img { transform: scale(1.03); opacity: .92; }
+    .photo-strip-item:hover img { transform: scale(1.04); opacity: .9; }
 
     /* Lightbox */
     .photo-lightbox {
@@ -911,53 +913,77 @@
     .lightbox-backdrop {
       position: absolute;
       inset: 0;
-      background: rgba(0,0,0,.88);
+      background: rgba(255,255,255,.96);
       cursor: zoom-out;
     }
+    body.dark .lightbox-backdrop { background: rgba(12,12,12,.96); }
     .lightbox-content {
       position: relative;
       z-index: 1;
       display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .lightbox-main {
+      display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
-      max-width: 90vw;
-      max-height: 90vh;
+      gap: 18px;
     }
     .lightbox-img {
-      max-width: 90vw;
+      max-width: 80vw;
       max-height: 78vh;
       object-fit: contain;
-      border-radius: 4px;
-      transform: scale(.96);
+      border-radius: 3px;
+      transform: scale(.97);
       transition: transform .3s;
     }
     .photo-lightbox.open .lightbox-img { transform: scale(1); }
     .lightbox-meta {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       align-items: center;
       font-family: 'Courier Prime', 'Courier New', monospace;
-      font-size: 12px;
-      letter-spacing: 0.12em;
+      font-size: 11px;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: rgba(255,255,255,.55);
+      color: rgba(0,0,0,.4);
     }
-    .lightbox-sep { color: rgba(255,255,255,.25); }
+    body.dark .lightbox-meta { color: rgba(255,255,255,.45); }
+    .lightbox-sep { color: rgba(0,0,0,.2); }
+    body.dark .lightbox-sep { color: rgba(255,255,255,.2); }
     .lightbox-close {
       position: absolute;
-      top: -44px;
+      top: -48px;
       right: 0;
       background: none;
       border: none;
-      color: rgba(255,255,255,.6);
+      color: rgba(0,0,0,.4);
       font-size: 28px;
       cursor: pointer;
       line-height: 1;
       padding: 4px;
       transition: color .15s;
     }
-    .lightbox-close:hover { color: #fff; }
+    .lightbox-close:hover { color: rgba(0,0,0,.8); }
+    body.dark .lightbox-close { color: rgba(255,255,255,.5); }
+    body.dark .lightbox-close:hover { color: #fff; }
+    .lightbox-nav {
+      background: none;
+      border: 1px solid rgba(0,0,0,.15);
+      border-radius: 50%;
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: rgba(0,0,0,.5);
+      flex-shrink: 0;
+      transition: border-color .15s, color .15s, transform .15s;
+      font-size: 18px;
+    }
+    .lightbox-nav:hover { border-color: rgba(0,0,0,.4); color: rgba(0,0,0,.9); transform: scale(1.05); }
+    body.dark .lightbox-nav { border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.6); }
+    body.dark .lightbox-nav:hover { border-color: rgba(255,255,255,.6); color: #fff; }
+    .lightbox-nav:disabled { opacity: .2; cursor: default; transform: none; }
 
     .fc-arrow {
       width: 48px; height: 48px;
@@ -1684,13 +1710,17 @@
   <div class="photo-lightbox" id="photo-lightbox">
     <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
     <div class="lightbox-content">
-      <button class="lightbox-close" id="lightbox-close">×</button>
-      <img class="lightbox-img" id="lightbox-img" src="" alt="" />
-      <div class="lightbox-meta">
-        <span id="lightbox-date"></span>
-        <span class="lightbox-sep" id="lightbox-sep">·</span>
-        <span id="lightbox-location"></span>
+      <button class="lightbox-nav" id="lightbox-prev">&#8592;</button>
+      <div class="lightbox-main">
+        <button class="lightbox-close" id="lightbox-close">×</button>
+        <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+        <div class="lightbox-meta">
+          <span id="lightbox-date"></span>
+          <span class="lightbox-sep" id="lightbox-sep">·</span>
+          <span id="lightbox-location"></span>
+        </div>
       </div>
+      <button class="lightbox-nav" id="lightbox-next">&#8594;</button>
     </div>
   </div>
 
@@ -1871,28 +1901,48 @@
   const lbSep      = document.getElementById('lightbox-sep');
   const lbClose    = document.getElementById('lightbox-close');
   const lbBackdrop = document.getElementById('lightbox-backdrop');
+  const lbPrev     = document.getElementById('lightbox-prev');
+  const lbNext     = document.getElementById('lightbox-next');
 
-  document.querySelectorAll('.photo-strip-item').forEach(item => {
+  const photoItems = Array.from(document.querySelectorAll('.photo-strip-item'));
+  let lbCurrent = 0;
+
+  function lbShow(index) {
+    lbCurrent = index;
+    const item = photoItems[index];
+    const date     = item.dataset.date || '';
+    const location = item.dataset.location || '';
+    lbImg.src = item.dataset.src;
+    lbDate.textContent = date;
+    lbLocation.textContent = location;
+    lbSep.style.display = (date && location) ? '' : 'none';
+    lbPrev.disabled = index === 0;
+    lbNext.disabled = index === photoItems.length - 1;
+  }
+
+  photoItems.forEach((item, i) => {
     item.addEventListener('click', () => {
-      const src      = item.dataset.src;
-      const date     = item.dataset.date || '';
-      const location = item.dataset.location || '';
-      lbImg.src = src;
-      lbDate.textContent = date;
-      lbLocation.textContent = location;
-      lbSep.style.display = (date && location) ? '' : 'none';
+      lbShow(i);
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden';
     });
   });
+
+  lbPrev.addEventListener('click', () => { if (lbCurrent > 0) lbShow(lbCurrent - 1); });
+  lbNext.addEventListener('click', () => { if (lbCurrent < photoItems.length - 1) lbShow(lbCurrent + 1); });
 
   function closeLightbox() {
     lightbox.classList.remove('open');
     document.body.style.overflow = '';
   }
   lbClose.addEventListener('click', closeLightbox);
-  lbBackdrop.addEventListener('click', closeLightbox);
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+  lbBackdrop.addEventListener('click', e => { if (e.target === lbBackdrop) closeLightbox(); });
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lbPrev.click();
+    if (e.key === 'ArrowRight') lbNext.click();
+  });
 
   // FAB — show on all screen sizes
   const fab = document.getElementById('mobile-fab');
