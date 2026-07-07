@@ -75,7 +75,7 @@
       backdrop-filter: blur(24px);
       -webkit-backdrop-filter: blur(24px);
       border-radius: 9999px;
-      padding: 7px 8px;
+      padding: 5px 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -136,6 +136,25 @@
     body.dark #theme-toggle { background: rgba(255,255,255,.08) !important; color: #fff !important; }
     #theme-toggle:hover { background: rgba(0,0,0,.10) !important; }
     body.dark #theme-toggle:hover { background: rgba(255,255,255,.16) !important; }
+
+    /* home icon link (replaces "About Me" text) */
+    .nav-home {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px 10px;
+      border-radius: var(--r-full);
+      color: var(--muted);
+      transition: color .15s, background .15s;
+      margin-right: 2px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    body.dark .nav-home { color: rgba(255,255,255,.5); }
+    .nav-home:hover { color: var(--ink); background: rgba(0,0,0,.05); }
+    body.dark .nav-home:hover { color: #fff; background: rgba(255,255,255,.08); }
+    .nav-home.active { color: var(--ink); background: rgba(0,0,0,.06); }
+    body.dark .nav-home.active { color: #fff; background: rgba(255,255,255,.12); }
 
     .nav-links {
       display: flex;
@@ -1052,6 +1071,7 @@
       }
       .nav-left { padding-right: 6px; margin-right: 4px; border-right: none; }
       #theme-toggle { width: 28px !important; height: 28px !important; }
+      .nav-home { padding: 5px 8px; margin-right: 0; }
       .nav-links {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -1119,9 +1139,15 @@
       </svg>
       </button>
     </div>
+    <!-- Home icon (replaces "About Me") -->
+    <a href="#about" class="nav-home" aria-label="Home">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+    </a>
     <!-- Center: nav links -->
     <ul class="nav-links">
-      <li><a href="#about">About Me</a></li>
       <li><a href="#career">Journey</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#side-works">Lab</a></li>
@@ -1383,8 +1409,6 @@
         <p class="project-desc">
           Bilingual travel companion PWA for Chinese-speaking parents visiting international students in the US.
           Real-time photo translation of menus, signs, and notices via Claude Vision API. Offline-first, deployed via WeChat link — no installation required.
-          <br><br>
-          Deliberately chose Anthropic's API over OpenAI: Anthropic is accessible from mainland China, enabling the core user base to operate without workarounds.
         </p>
         <div class="project-stats">
           <span class="stat-pill">PWA · No Install</span>
@@ -1634,14 +1658,23 @@
 <script>
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
+  const navHome  = document.querySelector('.nav-home');
   const navCta   = document.querySelector('.nav-cta');
   const footer   = document.querySelector('footer');
 
   function showSection(id) {
     sections.forEach(s => s.classList.toggle('active', s.id === id));
     navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    if (navHome) navHome.classList.toggle('active', id === 'about');
     window.scrollTo(0, 0);
     footer.style.display = (id === 'about' || id === 'contact') ? '' : 'none';
+  }
+
+  if (navHome) {
+    navHome.addEventListener('click', e => {
+      e.preventDefault();
+      showSection('about');
+    });
   }
 
   navLinks.forEach(a => {
