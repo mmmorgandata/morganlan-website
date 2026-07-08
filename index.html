@@ -921,11 +921,6 @@
       position: relative;
       z-index: 1;
       display: flex;
-      align-items: center;
-      gap: 24px;
-    }
-    .lightbox-main {
-      display: flex;
       flex-direction: column;
       align-items: center;
       gap: 18px;
@@ -944,46 +939,51 @@
       gap: 12px;
       align-items: center;
       font-family: 'Courier Prime', 'Courier New', monospace;
-      font-size: 11px;
+      font-size: 14px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: rgba(0,0,0,.4);
+      color: rgba(0,0,0,.45);
     }
-    body.dark .lightbox-meta { color: rgba(255,255,255,.45); }
+    body.dark .lightbox-meta { color: rgba(255,255,255,.5); }
     .lightbox-sep { color: rgba(0,0,0,.2); }
     body.dark .lightbox-sep { color: rgba(255,255,255,.2); }
     .lightbox-close {
-      position: absolute;
-      top: -48px;
-      right: 0;
+      position: fixed;
+      top: 28px;
+      right: 36px;
       background: none;
       border: none;
       color: rgba(0,0,0,.4);
-      font-size: 28px;
+      font-size: 32px;
       cursor: pointer;
       line-height: 1;
       padding: 4px;
+      z-index: 1001;
       transition: color .15s;
     }
-    .lightbox-close:hover { color: rgba(0,0,0,.8); }
+    .lightbox-close:hover { color: rgba(0,0,0,.85); }
     body.dark .lightbox-close { color: rgba(255,255,255,.5); }
     body.dark .lightbox-close:hover { color: #fff; }
     .lightbox-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
       background: none;
-      border: 1px solid rgba(0,0,0,.15);
-      border-radius: 50%;
-      width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
+      border: none;
       cursor: pointer;
-      color: rgba(0,0,0,.5);
-      flex-shrink: 0;
-      transition: border-color .15s, color .15s, transform .15s;
-      font-size: 18px;
+      color: rgba(0,0,0,.35);
+      font-size: 28px;
+      z-index: 1001;
+      padding: 12px;
+      transition: color .15s, transform .15s;
+      line-height: 1;
     }
-    .lightbox-nav:hover { border-color: rgba(0,0,0,.4); color: rgba(0,0,0,.9); transform: scale(1.05); }
-    body.dark .lightbox-nav { border-color: rgba(255,255,255,.2); color: rgba(255,255,255,.6); }
-    body.dark .lightbox-nav:hover { border-color: rgba(255,255,255,.6); color: #fff; }
-    .lightbox-nav:disabled { opacity: .2; cursor: default; transform: none; }
+    #lightbox-prev { left: 28px; }
+    #lightbox-next { right: 28px; }
+    .lightbox-nav:hover { color: rgba(0,0,0,.85); transform: translateY(-50%) scale(1.1); }
+    body.dark .lightbox-nav { color: rgba(255,255,255,.5); }
+    body.dark .lightbox-nav:hover { color: #fff; }
+    .lightbox-nav:disabled { opacity: .15; cursor: default; transform: translateY(-50%); }
 
     .fc-arrow {
       width: 48px; height: 48px;
@@ -1708,18 +1708,16 @@
   <!-- Lightbox -->
   <div class="photo-lightbox" id="photo-lightbox">
     <div class="lightbox-backdrop" id="lightbox-backdrop"></div>
+    <button class="lightbox-close" id="lightbox-close">×</button>
+    <button class="lightbox-nav" id="lightbox-prev">&#8592;</button>
+    <button class="lightbox-nav" id="lightbox-next">&#8594;</button>
     <div class="lightbox-content">
-      <button class="lightbox-nav" id="lightbox-prev">&#8592;</button>
-      <div class="lightbox-main">
-        <button class="lightbox-close" id="lightbox-close">×</button>
-        <img class="lightbox-img" id="lightbox-img" src="" alt="" />
-        <div class="lightbox-meta">
-          <span id="lightbox-date"></span>
-          <span class="lightbox-sep" id="lightbox-sep">·</span>
-          <span id="lightbox-location"></span>
-        </div>
+      <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+      <div class="lightbox-meta">
+        <span id="lightbox-date"></span>
+        <span class="lightbox-sep" id="lightbox-sep">·</span>
+        <span id="lightbox-location"></span>
       </div>
-      <button class="lightbox-nav" id="lightbox-next">&#8594;</button>
     </div>
   </div>
 
