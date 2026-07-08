@@ -1029,17 +1029,19 @@
     .plant-cell:hover { transform: scale(1.05); }
     .plant-img-wrap {
       width: 100%;
-      aspect-ratio: 1;
+      height: 180px;
       display: flex;
       align-items: flex-end;
       justify-content: center;
     }
     .plant-img-wrap img {
-      max-height: 100%;
-      max-width: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
       object-position: bottom center;
+      mix-blend-mode: multiply;
     }
+    body.dark .plant-img-wrap img { mix-blend-mode: normal; }
     .plant-img-placeholder {
       width: 100%;
       height: 100%;
@@ -1064,6 +1066,7 @@
     }
     body.dark .plant-common { color: #fff; }
     .plant-latin {
+      font-family: 'Courier Prime', 'Courier New', monospace;
       font-size: 11px;
       font-style: italic;
       color: var(--muted);
