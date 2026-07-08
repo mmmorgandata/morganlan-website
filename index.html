@@ -1077,27 +1077,19 @@
 
     /* ── Stamps ─────────────────────────────────────────────────── */
     .stamp-row {
-      display: flex;
-      gap: 40px;
-      align-items: flex-start;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
     }
     .stamp-wrap {
       padding: 10px;
       background:
         radial-gradient(circle, transparent 5px, var(--canvas) 5px)
         -6px -6px / 12px 12px;
-      flex-shrink: 0;
-    }
-    body.dark .stamp-wrap {
-      background:
-        radial-gradient(circle, transparent 5px, var(--canvas) 5px)
-        -6px -6px / 12px 12px;
     }
     .stamp {
       background: #fff;
-      padding: 12px 12px 18px;
-      width: 186px;
+      padding: 14px 14px 20px;
       position: relative;
       box-shadow: 0 2px 16px rgba(0,0,0,0.10);
     }
@@ -1109,10 +1101,9 @@
       text-transform: uppercase;
       text-align: center;
       color: #444;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .stamp-img-wrap {
-      position: relative;
       width: 100%;
       aspect-ratio: 1;
       overflow: hidden;
@@ -1123,32 +1114,8 @@
       object-fit: cover;
       display: block;
     }
-    .stamp-postmark {
-      position: absolute;
-      top: 38%;
-      left: 42%;
-      transform: translate(-50%, -50%) rotate(-18deg);
-      width: 88px;
-      height: 88px;
-      border: 2px solid rgba(60, 40, 20, 0.38);
-      border-radius: 50%;
-      pointer-events: none;
-    }
-    .stamp-postmark::before,
-    .stamp-postmark::after,
-    .stamp-postmark-line {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: -18%;
-      width: 136%;
-      height: 0;
-      border-top: 1.5px solid rgba(60, 40, 20, 0.28);
-    }
-    .stamp-postmark::before { transform: translateY(-6px); }
-    .stamp-postmark::after  { transform: translateY( 6px); }
     @media (max-width: 744px) {
-      .stamp-row { gap: 24px; justify-content: center; }
+      .stamp-row { grid-template-columns: repeat(2, 1fr); gap: 16px; }
     }
 
     /* ── 6. Contact ────────────────────────────────────────────── */
@@ -1924,8 +1891,7 @@
         <div class="stamp">
           <div class="stamp-label">Tennis</div>
           <div class="stamp-img-wrap">
-            <img src="images/out_tennis.png" alt="Tennis" />
-            <div class="stamp-postmark"></div>
+            <img src="images/out_tennis.jpg" alt="Tennis" />
           </div>
         </div>
       </div>
@@ -1934,7 +1900,6 @@
           <div class="stamp-label">Volleyball</div>
           <div class="stamp-img-wrap">
             <img src="images/out_volleyball.jpg" alt="Volleyball" />
-            <div class="stamp-postmark"></div>
           </div>
         </div>
       </div>
@@ -1943,7 +1908,6 @@
           <div class="stamp-label">Hiking</div>
           <div class="stamp-img-wrap">
             <img src="images/out_hiking.jpg" alt="Hiking" />
-            <div class="stamp-postmark"></div>
           </div>
         </div>
       </div>
