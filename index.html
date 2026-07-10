@@ -2014,7 +2014,7 @@
     navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
     if (navHome) navHome.classList.toggle('active', id === 'about');
     window.scrollTo(0, 0);
-    footer.style.display = (id === 'about') ? '' : 'none';
+    footer.style.display = 'none';
   }
 
   if (navHome) {
