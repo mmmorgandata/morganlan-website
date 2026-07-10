@@ -302,7 +302,7 @@
     .about-meta-section {
       width: min(calc(100% - 32px), 1060px);
       margin: 0 auto;
-      padding: 0 0 48px;
+      padding: 0 0 48px 50px;
       display: flex;
       flex-direction: column;
       gap: 0;
@@ -310,7 +310,17 @@
     .meta-block {
       display: flex; flex-direction: column; gap: 10px;
       padding: 22px 0;
-      border-top: 1px solid var(--hairline);
+      position: relative;
+      border-top: none;
+    }
+    .meta-block::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -50px;
+      right: 0;
+      height: 1px;
+      background: var(--hairline);
     }
     .meta-block-label {
       font-size: 12px;
@@ -1251,7 +1261,8 @@
       section { padding: 60px 24px; }
       .about-hero { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px; min-height: auto; }
       .about-photo-circle { width: 260px; height: 260px; }
-      .about-meta-section { width: calc(100% - 48px); padding: 0 0 60px; }
+      .about-meta-section { width: calc(100% - 48px); padding: 0 0 60px 32px; }
+      .meta-block::before { left: -32px; }
       .about-name { font-size: 36px; }
       .projects-grid { grid-template-columns: 1fr; }
       .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
@@ -1319,7 +1330,8 @@
       /* Sections — push content below 灵动岛 (top:10px + height:46px + gap) */
       section { padding: 64px 20px 32px; }
       .about-hero { padding: 64px 20px 20px; }
-      .about-meta-section { width: calc(100% - 12px); padding: 0 0 32px; }
+      .about-meta-section { width: calc(100% - 12px); padding: 0 0 32px 20px; }
+      .meta-block::before { left: -20px; }
       .edu-stamps { grid-template-columns: 1fr; }
       .stamp-scene { width: 100%; height: 200px; }
       .edu-stamp-item:first-child .stamp-scene { max-width: 100%; }  /* UW */
