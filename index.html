@@ -1963,7 +1963,7 @@
 <section id="contact">
   <div class="contact-inner">
 
-    <img class="contact-photo" src="images/contact.jpg" alt="Morgan Lan" />
+    <img class="contact-photo" src="images/contact.JPG" alt="Morgan Lan" />
 
     <div class="contact-content">
       <div class="contact-label">Get in touch</div>
@@ -2014,7 +2014,7 @@
     navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
     if (navHome) navHome.classList.toggle('active', id === 'about');
     window.scrollTo(0, 0);
-    footer.style.display = (id === 'about' || id === 'contact') ? '' : 'none';
+    footer.style.display = (id === 'about') ? '' : 'none';
   }
 
   if (navHome) {
