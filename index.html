@@ -301,9 +301,9 @@
     .fact-text strong { font-weight: 600; }
     /* Meta section below hero */
     .about-meta-section {
-      max-width: 1200px;
+      width: min(calc(100% - 32px), 1060px);
       margin: 0 auto;
-      padding: 0 64px 48px;
+      padding: 0 0 48px;
       display: flex;
       flex-direction: column;
       gap: 0;
@@ -454,18 +454,17 @@
     }
 
     /* ── Education stamps ─────────────────────────────────────── */
-    .edu-stamps { display: flex; gap: 48px; flex-wrap: wrap; align-items: flex-start; }
+    .edu-stamps { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: flex-start; }
     .edu-stamp-item { display: flex; flex-direction: column; gap: 14px; }
 
     .stamp-scene {
       perspective: 900px;
       cursor: pointer;
-      width: 280px;
+      width: 100%;
       height: 200px;
-      flex-shrink: 0;
     }
-    .edu-stamp-item:first-child .stamp-scene { width: 270px; } /* UW */
-    .edu-stamp-item:last-child  .stamp-scene { width: 280px; } /* SCUT */
+    .edu-stamp-item:first-child .stamp-scene { width: 100%; }
+    .edu-stamp-item:last-child  .stamp-scene { width: 100%; }
     .stamp-card-3d {
       position: relative;
       width: 100%;
@@ -1252,7 +1251,7 @@
       section { padding: 60px 24px; }
       .about-hero { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px; min-height: auto; }
       .about-photo-circle { width: 260px; height: 260px; }
-      .about-meta-section { padding: 40px 24px 60px; }
+      .about-meta-section { width: calc(100% - 48px); padding: 0 0 60px; }
       .about-name { font-size: 36px; }
       .projects-grid { grid-template-columns: 1fr; }
       .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
@@ -1320,11 +1319,11 @@
       /* Sections — push content below 灵动岛 (top:10px + height:46px + gap) */
       section { padding: 64px 20px 32px; }
       .about-hero { padding: 64px 20px 20px; }
-      .about-meta-section { padding: 20px 20px 32px; }
-      .edu-stamps { flex-direction: column; }
+      .about-meta-section { width: calc(100% - 12px); padding: 0 0 32px; }
+      .edu-stamps { grid-template-columns: 1fr; }
       .stamp-scene { width: 100%; height: 200px; }
-      .edu-stamp-item:first-child .stamp-scene { max-width: 255px; }  /* UW */
-      .edu-stamp-item:last-child  .stamp-scene { max-width: 260px; }  /* SCUT — narrower */
+      .edu-stamp-item:first-child .stamp-scene { max-width: 100%; }  /* UW */
+      .edu-stamp-item:last-child  .stamp-scene { max-width: 100%; }
       .section-title { font-size: 26px; }
 
       /* Contact */
