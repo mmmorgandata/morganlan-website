@@ -454,17 +454,18 @@
     }
 
     /* ── Education stamps ─────────────────────────────────────── */
-    .edu-stamps { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: flex-start; }
+    .edu-stamps { display: flex; gap: 48px; flex-wrap: wrap; align-items: flex-start; }
     .edu-stamp-item { display: flex; flex-direction: column; gap: 14px; }
 
     .stamp-scene {
       perspective: 900px;
       cursor: pointer;
-      width: 100%;
+      width: 280px;
       height: 200px;
+      flex-shrink: 0;
     }
-    .edu-stamp-item:first-child .stamp-scene { width: 100%; }
-    .edu-stamp-item:last-child  .stamp-scene { width: 100%; }
+    .edu-stamp-item:first-child .stamp-scene { width: 270px; } /* UW */
+    .edu-stamp-item:last-child  .stamp-scene { width: 280px; } /* SCUT */
     .stamp-card-3d {
       position: relative;
       width: 100%;
