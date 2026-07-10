@@ -272,6 +272,7 @@
       font-size: 16px;
       color: var(--body);
       line-height: 1.7;
+      max-width: 480px;
     }
     /* Airbnb-style fact list */
     .about-facts {
@@ -300,9 +301,9 @@
     .fact-text strong { font-weight: 600; }
     /* Meta section below hero */
     .about-meta-section {
-      width: min(calc(100% - 32px), 1060px);
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 0 0 48px 50px;
+      padding: 0 64px 48px;
       display: flex;
       flex-direction: column;
       gap: 0;
@@ -372,7 +373,7 @@
       transition: border-color .15s;
     }
     .tag.highlight { background: var(--rausch); border-color: var(--rausch); color: #fff; }
-    .tag-sm { font-size: 14px; padding: 5px 12px; }
+    .tag-sm { font-size: 12px; padding: 4px 10px; }
     .skills-sublabel {
       font-size: 11px; font-weight: 700;
       text-transform: uppercase; letter-spacing: 1px;
@@ -387,7 +388,7 @@
       font-size: 13px; font-weight: 500;
       color: var(--ink);
     }
-    .skill-badge img { width: 22px; height: 22px; object-fit: contain; display: block; }
+    .skill-badge img { width: 16px; height: 16px; object-fit: contain; display: block; }
     /* scroll hint */
     .scroll-hint {
       display: flex;
@@ -1251,7 +1252,7 @@
       section { padding: 60px 24px; }
       .about-hero { grid-template-columns: 1fr; gap: 32px; padding: 40px 24px; min-height: auto; }
       .about-photo-circle { width: 260px; height: 260px; }
-      .about-meta-section { width: calc(100% - 48px); padding: 0 0 60px 32px; }
+      .about-meta-section { padding: 40px 24px 60px; }
       .about-name { font-size: 36px; }
       .projects-grid { grid-template-columns: 1fr; }
       .project-card.featured { grid-column: span 1; grid-template-columns: 1fr; }
@@ -1319,11 +1320,11 @@
       /* Sections — push content below 灵动岛 (top:10px + height:46px + gap) */
       section { padding: 64px 20px 32px; }
       .about-hero { padding: 64px 20px 20px; }
-      .about-meta-section { width: calc(100% - 12px); padding: 0 0 32px 20px; }
-      .edu-stamps { grid-template-columns: 1fr; }
+      .about-meta-section { padding: 20px 20px 32px; }
+      .edu-stamps { flex-direction: column; }
       .stamp-scene { width: 100%; height: 200px; }
-      .edu-stamp-item:first-child .stamp-scene { max-width: 100%; }  /* UW */
-      .edu-stamp-item:last-child  .stamp-scene { max-width: 100%; }
+      .edu-stamp-item:first-child .stamp-scene { max-width: 255px; }  /* UW */
+      .edu-stamp-item:last-child  .stamp-scene { max-width: 260px; }  /* SCUT — narrower */
       .section-title { font-size: 26px; }
 
       /* Contact */
@@ -1416,7 +1417,7 @@
           <svg class="fact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
-          <span class="fact-text"><strong>Speaks:</strong> English, Chinese, Cantonese</span>
+          <span class="fact-text"><strong>Speaks</strong> English, Chinese, Cantonese</span>
         </div>
 
         <div class="fact-row">
@@ -1496,7 +1497,7 @@
               </div>
               <!-- Back -->
               <div class="stamp-face stamp-back-face">
-                <div class="stamp-back-card" style="border-radius:9999px;padding:14px 28px;">
+                <div class="stamp-back-card">
                   <div class="stamp-back-title">While I was here…</div>
                   <div class="stamp-back-item">VP, Student Innovation and Entrepreneurship Center</div>
                   <div class="stamp-back-item">Volleyball Team</div>
@@ -1533,6 +1534,7 @@
       <div class="meta-block-label">Fields &amp; Skills</div>
       <div style="display:flex;flex-direction:column;gap:16px;margin-top:6px;">
         <div>
+          <div class="skills-sublabel">Fields</div>
           <div class="interest-tags">
             <span class="tag tag-sm">Forward Deployed Eng</span>
             <span class="tag tag-sm">Data Analytics</span>
@@ -1543,11 +1545,11 @@
           </div>
         </div>
         <div>
+          <div class="skills-sublabel">Skills</div>
           <div class="skill-icons">
-            <span class="skill-badge" title="Python"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" /></span>
-            <span class="skill-badge" title="SQL"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="SQL" /></span>
-            <span class="skill-badge" title="NoSQL / MongoDB"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" alt="NoSQL" /></span>
-            <span class="skill-badge" title="R"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/r/r-original.svg" alt="R" /></span>
+            <span class="skill-badge"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" />Python</span>
+            <span class="skill-badge"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="SQL" />SQL</span>
+            <span class="skill-badge"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" alt="NoSQL" />NoSQL</span>
           </div>
         </div>
       </div>
@@ -1736,7 +1738,7 @@
 
 <!-- ── 4. Side Works ── -->
 <section id="side-works">
-  <div class="section-label">Personal builds</div>
+  <div class="section-label">Personal builds &lt;/&gt;</div>
   <h2 class="section-title">Side Works</h2>
 
   <div class="fc-wrapper">
