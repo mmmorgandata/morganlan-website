@@ -373,6 +373,22 @@
       transition: border-color .15s;
     }
     .tag.highlight { background: var(--rausch); border-color: var(--rausch); color: #fff; }
+    .tag-sm { font-size: 12px; padding: 4px 10px; }
+    .skills-sublabel {
+      font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    .skill-icons { display: flex; flex-wrap: wrap; gap: 8px; }
+    .skill-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      border-radius: var(--r-full);
+      border: 1.5px solid var(--hairline);
+      font-size: 13px; font-weight: 500;
+      color: var(--ink);
+    }
+    .skill-badge img { width: 16px; height: 16px; object-fit: contain; display: block; }
     /* scroll hint */
     .scroll-hint {
       display: flex;
@@ -1516,13 +1532,26 @@
 
     <div class="meta-block">
       <div class="meta-block-label">Fields &amp; Skills</div>
-      <div class="interest-tags">
-        <span class="tag">Forward Deployed Eng</span>
-        <span class="tag">Data Analytics</span>
-        <span class="tag">Supply Chain</span>
-        <span class="tag">Product</span>
-        <span class="tag">ML / Optimization</span>
-        <span class="tag">Operations Research</span>
+      <div style="display:flex;flex-direction:column;gap:16px;margin-top:6px;">
+        <div>
+          <div class="skills-sublabel">Fields</div>
+          <div class="interest-tags">
+            <span class="tag tag-sm">Forward Deployed Eng</span>
+            <span class="tag tag-sm">Data Analytics</span>
+            <span class="tag tag-sm">Supply Chain</span>
+            <span class="tag tag-sm">Product</span>
+            <span class="tag tag-sm">ML / Optimization</span>
+            <span class="tag tag-sm">Operations Research</span>
+          </div>
+        </div>
+        <div>
+          <div class="skills-sublabel">Skills</div>
+          <div class="skill-icons">
+            <span class="skill-badge"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" />Python</span>
+            <span class="skill-badge"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="SQL" />SQL</span>
+            <span class="skill-badge"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" alt="NoSQL" />NoSQL</span>
+          </div>
+        </div>
       </div>
     </div>
 
