@@ -1384,7 +1384,7 @@
     .lab-phone-strip::-webkit-scrollbar { display: none; }
     .lab-phone-strip.grabbing { cursor: grabbing; }
     .lab-phone-track {
-      display: flex; gap: 20px;
+      display: flex; gap: 36px;
       width: max-content;
     }
     .lab-phone-item {
@@ -1400,30 +1400,46 @@
     /* App Store–style card */
     .lab-phone-item { flex-shrink: 0; }
     .phone-card {
-      width: 240px;
+      width: 256px;
       background: var(--soft);
-      border-radius: 20px;
+      border-radius: 24px;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px 0;
-      gap: 14px;
+      padding: 22px 20px 0;
+      gap: 16px;
     }
     .lab-phone-caption {
       font-size: 14px; font-weight: 600; color: var(--ink);
-      text-align: center; line-height: 1.4; max-width: 180px;
+      text-align: center; line-height: 1.4; max-width: 190px;
     }
-    .phone-frame {
-      width: 208px; height: 390px;
+    /* Phone bezel */
+    .phone-bezel {
+      border: 8px solid #1a1a1a;
+      border-radius: 36px;
       overflow: hidden;
-      border-radius: 16px 16px 0 0;
+      position: relative;
       flex-shrink: 0;
+    }
+    body.dark .phone-bezel { border-color: #2a2a2a; }
+    .phone-bezel::before {
+      content: '';
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 76px; height: 20px;
+      background: #1a1a1a;
+      border-radius: 0 0 14px 14px;
+      z-index: 10; pointer-events: none;
+    }
+    body.dark .phone-bezel::before { background: #2a2a2a; }
+    .phone-frame {
+      width: 216px; height: 400px;
+      overflow: hidden;
     }
     .phone-frame iframe {
       width: 390px; height: 844px;
       border: none;
-      transform: scale(0.5333);
+      transform: scale(0.5538);
       transform-origin: top left;
       pointer-events: none;
     }
@@ -1905,8 +1921,10 @@
       <div class="lab-phone-item">
         <div class="phone-card">
           <div class="lab-phone-caption">Everything they need, in one place</div>
-          <div class="phone-frame">
-            <iframe src="https://parentpass.vercel.app/" title="ParentPass home" loading="lazy"></iframe>
+          <div class="phone-bezel">
+            <div class="phone-frame">
+              <iframe src="https://parentpass.vercel.app/" title="ParentPass home" loading="lazy"></iframe>
+            </div>
           </div>
         </div>
       </div>
@@ -1914,8 +1932,10 @@
       <div class="lab-phone-item">
         <div class="phone-card">
           <div class="lab-phone-caption">Airport arrival — step by step</div>
-          <div class="phone-frame">
-            <iframe src="https://parentpass.vercel.app/entry" title="ParentPass entry" loading="lazy"></iframe>
+          <div class="phone-bezel">
+            <div class="phone-frame">
+              <iframe src="https://parentpass.vercel.app/entry" title="ParentPass entry" loading="lazy"></iframe>
+            </div>
           </div>
         </div>
       </div>
@@ -1923,8 +1943,10 @@
       <div class="lab-phone-item">
         <div class="phone-card">
           <div class="lab-phone-caption">Speak English for them, instantly</div>
-          <div class="phone-frame">
-            <iframe src="https://parentpass.vercel.app/speak" title="ParentPass speak" loading="lazy"></iframe>
+          <div class="phone-bezel">
+            <div class="phone-frame">
+              <iframe src="https://parentpass.vercel.app/speak" title="ParentPass speak" loading="lazy"></iframe>
+            </div>
           </div>
         </div>
       </div>
@@ -1932,8 +1954,10 @@
       <div class="lab-phone-item">
         <div class="phone-card">
           <div class="lab-phone-caption">SOS — help is one tap away</div>
-          <div class="phone-frame">
-            <iframe src="https://parentpass.vercel.app/sos" title="ParentPass SOS" loading="lazy"></iframe>
+          <div class="phone-bezel">
+            <div class="phone-frame">
+              <iframe src="https://parentpass.vercel.app/sos" title="ParentPass SOS" loading="lazy"></iframe>
+            </div>
           </div>
         </div>
       </div>
