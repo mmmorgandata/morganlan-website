@@ -397,8 +397,37 @@
       border: 1.5px solid var(--hairline);
       font-size: 13px; font-weight: 500;
       color: var(--ink);
+      position: relative;
+      cursor: default;
+      transition: border-color .15s, background .15s;
     }
+    .skill-badge:hover { border-color: var(--ink); background: rgba(0,0,0,.03); }
+    body.dark .skill-badge:hover { background: rgba(255,255,255,.06); }
     .skill-badge img { width: 22px; height: 22px; object-fit: contain; display: block; }
+    /* custom tooltip */
+    .skill-badge::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: var(--ink);
+      color: #fff;
+      font-family: 'Courier Prime', monospace;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      white-space: nowrap;
+      padding: 4px 10px;
+      border-radius: 999px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s, transform .15s;
+    }
+    .skill-badge:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
     /* scroll hint */
     .scroll-hint {
       display: flex;
@@ -1475,8 +1504,14 @@
     .phone-content {
       position: absolute; inset: 0;
       overflow: hidden;
+    }
+    /* Transparent overlay blocks all touch/click on the iframe */
+    .phone-shell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 6;
       touch-action: none;
-      pointer-events: none;
     }
     .phone-content iframe {
       width: 390px; height: 844px;
@@ -1729,11 +1764,11 @@
         </div>
         <div>
           <div class="skill-icons">
-            <span class="skill-badge" title="Python"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" /></span>
-            <span class="skill-badge" title="SQL"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="SQL" /></span>
-            <span class="skill-badge" title="NoSQL / MongoDB"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" alt="NoSQL" /></span>
-            <span class="skill-badge" title="R"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/r/r-original.svg" alt="R" /></span>
-            <span class="skill-badge" title="Power BI"><img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg" alt="Power BI" /></span>
+            <span class="skill-badge" data-tip="Python"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" /></span>
+            <span class="skill-badge" data-tip="SQL"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="SQL" /></span>
+            <span class="skill-badge" data-tip="MongoDB"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" alt="NoSQL" /></span>
+            <span class="skill-badge" data-tip="R"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/r/r-original.svg" alt="R" /></span>
+            <span class="skill-badge" data-tip="Power BI"><img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg" alt="Power BI" /></span>
           </div>
         </div>
       </div>
