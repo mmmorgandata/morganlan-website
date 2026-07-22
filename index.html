@@ -1464,12 +1464,20 @@
       pointer-events: none;
     }
 
-    .lab-more {
-      display: flex; align-items: center; justify-content: space-between; gap: 20px;
-      padding: 20px 24px; margin-top: 36px;
-      border: 1px solid var(--hairline);
-      border-radius: var(--r-md);
-      font-size: 14px; color: var(--muted);
+    .lab-description {
+      margin-top: 40px;
+      max-width: 680px;
+    }
+    .lab-desc-section-title {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+      color: var(--muted); margin: 0 0 6px;
+    }
+    .lab-desc-body {
+      font-size: 14px; line-height: 1.7; color: var(--ink);
+      margin: 0 0 24px;
+    }
+    .lab-desc-links {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px;
     }
     @media (max-width: 900px) {
       .lab-phone-strip { margin: 0 -24px; padding: 0 24px 8px; }
@@ -1895,17 +1903,7 @@
     <div class="lab-app-icon"><img src="images/pp-icon.jpg" alt="ParentPass icon" /></div>
     <div>
       <div class="lab-app-name">ParentPass</div>
-      <div class="lab-app-sub">爸妈出行手册 · Bilingual travel companion for Chinese parents in the US</div>
-      <div class="lab-app-links">
-        <a href="https://parentpass.vercel.app/" target="_blank" class="project-link" style="background:var(--rausch);color:#fff !important;border-color:var(--rausch);padding:6px 14px;font-size:12px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Live Demo
-        </a>
-        <a href="https://github.com/mmmorgandata/parentpass" target="_blank" class="project-link" style="padding:6px 14px;font-size:12px;">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          GitHub
-        </a>
-      </div>
+      <div class="lab-app-sub">Bilingual travel companion for my parents</div>
     </div>
   </div>
 
@@ -2021,12 +2019,27 @@
     </div>
   </div>
 
-  <!-- More coming soon -->
-  <div class="lab-more">
-    <span>Always prototyping. Check GitHub for the latest experiments.</span>
-    <a href="https://github.com/mmmorgandata" target="_blank" class="project-link" style="flex-shrink:0;">
-      github.com/mmmorgandata →
-    </a>
+  <!-- App description -->
+  <div class="lab-description">
+    <p class="lab-desc-section-title">THE IDEA</p>
+    <p class="lab-desc-body">My parents visited me in the US for the first time. They don't speak English, don't use Google Maps, and weren't sure what to do at customs. I spent half the trip translating on the fly — and realized there was no app that actually solved this for Chinese families.</p>
+
+    <p class="lab-desc-section-title">THE BUILD</p>
+    <p class="lab-desc-body">ParentPass is a PWA — no App Store, no install friction. It works offline because airports have spotty wifi and parents shouldn't have to worry about connectivity. The core flows: trip itinerary with flight info, airport navigation prompts in Chinese, a phrasebook for common travel situations, and an SOS screen with emergency contacts and English instructions they can hand to someone nearby.</p>
+
+    <p class="lab-desc-section-title">SYSTEM DESIGN</p>
+    <p class="lab-desc-body">Built with React + Vite, deployed on Vercel. All content is bilingual — every string has a Chinese and English version, toggled at the app level. Service worker caches all routes and static assets for full offline support. State is localStorage-backed so trip details persist between sessions without needing a backend.</p>
+
+    <div class="lab-desc-links">
+      <a href="https://parentpass.vercel.app/" target="_blank" class="project-link" style="background:var(--rausch);color:#fff !important;border-color:var(--rausch);padding:6px 14px;font-size:12px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Live Demo
+      </a>
+      <a href="https://github.com/mmmorgandata/parentpass" target="_blank" class="project-link" style="padding:6px 14px;font-size:12px;">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+    </div>
   </div>
 
 </section>
