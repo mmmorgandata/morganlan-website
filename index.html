@@ -1475,6 +1475,8 @@
     .phone-content {
       position: absolute; inset: 0;
       overflow: hidden;
+      touch-action: none;
+      pointer-events: none;
     }
     .phone-content iframe {
       width: 390px; height: 844px;
@@ -1504,9 +1506,10 @@
     }
     @media (max-width: 600px) {
       .lab-phone-strip { margin: 0 -20px; padding: 0 20px 8px; }
-      .lab-stats-row { gap: 0; }
-      .lab-stat { min-width: 72px; padding: 0 8px; }
-      .lab-stat-value { font-size: 15px; }
+      .lab-stats-row { gap: 12px; overflow-x: auto; flex-wrap: nowrap; }
+      .lab-stat { min-width: 90px; padding: 6px 10px; flex: 0 0 auto; white-space: nowrap; }
+      .lab-stat-top, .lab-stat-bottom { white-space: nowrap; }
+      .lab-stat-value { font-size: 15px; white-space: nowrap; }
     }
   </style>
 </head>
