@@ -1442,13 +1442,12 @@
     .phone-shell {
       width: 212px; height: 460px;
       border-radius: 40px;
-      background: #fff;
+      background: var(--soft);
       box-shadow: 0 24px 56px rgba(0,0,0,.13), 0 4px 14px rgba(0,0,0,.07);
       overflow: hidden;
       position: relative;
       flex-shrink: 0;
     }
-    body.dark .phone-shell { background: #1c1c1e; }
     /* Dynamic Island */
     .phone-island {
       position: absolute; top: 7px; left: 50%;
@@ -1462,15 +1461,14 @@
     .phone-statusbar {
       position: absolute; top: 0; left: 0; right: 0;
       height: 32px;
-      background: #fff;
+      background: var(--soft);
       display: flex; align-items: center;
       justify-content: space-between;
       padding: 0 28px;
       z-index: 9; pointer-events: none;
       color: #000;
     }
-    body.dark .phone-statusbar { background: #1c1c1e; color: #fff; }
-    body.dark .phone-shell { background: #1c1c1e; }
+    body.dark .phone-statusbar { background: var(--soft); color: #fff; }
     .phone-time { font-size: 9px; font-weight: 700; letter-spacing: -0.2px; }
     .phone-status-icons { display: flex; align-items: center; gap: 3px; }
     /* iframe content area */
