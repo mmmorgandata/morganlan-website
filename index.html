@@ -1361,17 +1361,17 @@
     .lab-stats-row::-webkit-scrollbar { display: none; }
     .lab-stat {
       display: flex; flex-direction: column; align-items: center;
-      gap: 3px; flex: 1; min-width: 90px;
+      gap: 2px; flex: 1; min-width: 90px;
       padding: 0 12px;
       border-right: 1px solid var(--hairline);
     }
     .lab-stat:last-child { border-right: none; }
+    .lab-stat-top { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; color: var(--muted); text-align: center; }
     .lab-stat-value {
       font-size: 17px; font-weight: 700; color: var(--ink);
-      letter-spacing: -0.3px; white-space: nowrap;
+      letter-spacing: -0.3px; white-space: nowrap; line-height: 1.2;
     }
-    .lab-stat-stars { color: #666; font-size: 11px; letter-spacing: 1px; }
-    .lab-stat-label { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.4; }
+    .lab-stat-bottom { font-size: 10px; color: var(--muted); text-align: center; }
 
     /* Phone strip */
     .lab-phone-strip {
@@ -1910,25 +1910,29 @@
   <!-- App Store–style stats row -->
   <div class="lab-stats-row">
     <div class="lab-stat">
+      <div class="lab-stat-top">2 RATINGS</div>
       <div class="lab-stat-value">5.0</div>
-      <div class="lab-stat-stars">★★★★★</div>
-      <div class="lab-stat-label">2 Ratings<br>(Thanks 爸妈)</div>
+      <div class="lab-stat-bottom">★★★★★</div>
     </div>
     <div class="lab-stat">
-      <div class="lab-stat-value">PWA</div>
-      <div class="lab-stat-label">No Install<br>Offline-First</div>
+      <div class="lab-stat-top">AWARDS</div>
+      <div class="lab-stat-value">MOM'S<br>CHOICE</div>
+      <div class="lab-stat-bottom">Apps</div>
     </div>
     <div class="lab-stat">
-      <div class="lab-stat-value">Solo</div>
-      <div class="lab-stat-label">Developer<br>Morgan Lan</div>
+      <div class="lab-stat-top">AGES</div>
+      <div class="lab-stat-value">55+</div>
+      <div class="lab-stat-bottom">Elderly Friendly</div>
     </div>
     <div class="lab-stat">
-      <div class="lab-stat-value">中·EN</div>
-      <div class="lab-stat-label">Languages<br>Bilingual</div>
+      <div class="lab-stat-top">LANGUAGE</div>
+      <div class="lab-stat-value">EN CN</div>
+      <div class="lab-stat-bottom">简体中文</div>
     </div>
     <div class="lab-stat">
+      <div class="lab-stat-top">CATEGORY</div>
       <div class="lab-stat-value">Travel</div>
-      <div class="lab-stat-label">Category<br>Family</div>
+      <div class="lab-stat-bottom">Family</div>
     </div>
   </div>
 
