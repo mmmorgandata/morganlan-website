@@ -1416,29 +1416,46 @@
       display: flex; align-items: center; justify-content: center;
       max-width: 190px;
     }
-    /* Phone bezel */
-    .phone-bezel {
-      border: 8px solid #1a1a1a;
-      border-radius: 36px;
+    /* Phone shell — borderless, shadow + Dynamic Island */
+    .phone-shell {
+      width: 212px; height: 460px;
+      border-radius: 40px;
+      background: #fff;
+      box-shadow: 0 24px 56px rgba(0,0,0,.13), 0 4px 14px rgba(0,0,0,.07);
       overflow: hidden;
       position: relative;
       flex-shrink: 0;
     }
-    body.dark .phone-bezel { border-color: #2a2a2a; }
-    .phone-bezel::before {
-      content: '';
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 76px; height: 20px;
-      background: #1a1a1a;
-      border-radius: 0 0 14px 14px;
+    body.dark .phone-shell { background: #1c1c1e; }
+    /* Dynamic Island */
+    .phone-island {
+      position: absolute; top: 9px; left: 50%;
+      transform: translateX(-50%);
+      width: 78px; height: 22px;
+      background: #000;
+      border-radius: 20px;
       z-index: 10; pointer-events: none;
     }
-    body.dark .phone-bezel::before { background: #2a2a2a; }
-    .phone-frame {
-      width: 212px; height: 460px; /* taller = proper iPhone proportions */
+    /* Status bar overlay */
+    .phone-statusbar {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 46px;
+      background: #fff;
+      display: flex; align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 16px 7px;
+      z-index: 9; pointer-events: none;
+      color: #000;
+    }
+    body.dark .phone-statusbar { background: #1c1c1e; color: #fff; }
+    .phone-time { font-size: 11px; font-weight: 700; letter-spacing: -0.2px; }
+    .phone-status-icons { display: flex; align-items: center; gap: 4px; }
+    /* iframe content area */
+    .phone-content {
+      position: absolute; inset: 0;
       overflow: hidden;
     }
-    .phone-frame iframe {
+    .phone-content iframe {
       width: 390px; height: 844px;
       border: none;
       transform: scale(0.5436);
@@ -1923,8 +1940,17 @@
       <div class="lab-phone-item">
         <div class="phone-card">
           <div class="lab-phone-caption">Everything they need, in one place</div>
-          <div class="phone-bezel">
-            <div class="phone-frame">
+          <div class="phone-shell">
+            <div class="phone-island"></div>
+            <div class="phone-statusbar">
+              <span class="phone-time">9:41</span>
+              <div class="phone-status-icons">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="8.5" width="3" height="3.5" rx="0.8"/><rect x="4.5" y="6" width="3" height="6" rx="0.8"/><rect x="9" y="3" width="3" height="9" rx="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="0.8"/></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M0.5 4C3.5 1 12.5 1 15.5 4"/><path d="M2.8 6.5C5 4.5 11 4.5 13.2 6.5"/><path d="M5.5 9C6.5 8 9.5 8 10.5 9"/><circle cx="8" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>
+                <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.75" y="0.75" width="20.5" height="10.5" rx="2.25" stroke-width="1.5"/><rect x="2.5" y="2.5" width="15" height="7" rx="1" fill="currentColor" stroke="none"/><path d="M22.25 4C23.25 4 23.25 8 22.25 8" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <div class="phone-content">
               <iframe src="https://parentpass.vercel.app/" title="ParentPass home" loading="lazy"></iframe>
             </div>
           </div>
@@ -1934,9 +1960,18 @@
       <div class="lab-phone-item">
         <div class="phone-card">
           <div class="lab-phone-caption">Airport arrival — step by step</div>
-          <div class="phone-bezel">
-            <div class="phone-frame">
-              <iframe src="https://parentpass.vercel.app/entry" title="ParentPass entry" loading="lazy"></iframe>
+          <div class="phone-shell">
+            <div class="phone-island"></div>
+            <div class="phone-statusbar">
+              <span class="phone-time">9:41</span>
+              <div class="phone-status-icons">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="8.5" width="3" height="3.5" rx="0.8"/><rect x="4.5" y="6" width="3" height="6" rx="0.8"/><rect x="9" y="3" width="3" height="9" rx="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="0.8"/></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M0.5 4C3.5 1 12.5 1 15.5 4"/><path d="M2.8 6.5C5 4.5 11 4.5 13.2 6.5"/><path d="M5.5 9C6.5 8 9.5 8 10.5 9"/><circle cx="8" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>
+                <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.75" y="0.75" width="20.5" height="10.5" rx="2.25" stroke-width="1.5"/><rect x="2.5" y="2.5" width="15" height="7" rx="1" fill="currentColor" stroke="none"/><path d="M22.25 4C23.25 4 23.25 8 22.25 8" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <div class="phone-content">
+              <iframe src="https://parentpass.vercel.app/translate" title="ParentPass entry" loading="lazy"></iframe>
             </div>
           </div>
         </div>
@@ -1945,9 +1980,18 @@
       <div class="lab-phone-item">
         <div class="phone-card">
           <div class="lab-phone-caption">Speak English for them, instantly</div>
-          <div class="phone-bezel">
-            <div class="phone-frame">
-              <iframe src="https://parentpass.vercel.app/speak" title="ParentPass speak" loading="lazy"></iframe>
+          <div class="phone-shell">
+            <div class="phone-island"></div>
+            <div class="phone-statusbar">
+              <span class="phone-time">9:41</span>
+              <div class="phone-status-icons">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="8.5" width="3" height="3.5" rx="0.8"/><rect x="4.5" y="6" width="3" height="6" rx="0.8"/><rect x="9" y="3" width="3" height="9" rx="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="0.8"/></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M0.5 4C3.5 1 12.5 1 15.5 4"/><path d="M2.8 6.5C5 4.5 11 4.5 13.2 6.5"/><path d="M5.5 9C6.5 8 9.5 8 10.5 9"/><circle cx="8" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>
+                <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.75" y="0.75" width="20.5" height="10.5" rx="2.25" stroke-width="1.5"/><rect x="2.5" y="2.5" width="15" height="7" rx="1" fill="currentColor" stroke="none"/><path d="M22.25 4C23.25 4 23.25 8 22.25 8" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <div class="phone-content">
+              <iframe src="https://parentpass.vercel.app/phrases" title="ParentPass speak" loading="lazy"></iframe>
             </div>
           </div>
         </div>
@@ -1956,8 +2000,17 @@
       <div class="lab-phone-item">
         <div class="phone-card">
           <div class="lab-phone-caption">SOS — help is one tap away</div>
-          <div class="phone-bezel">
-            <div class="phone-frame">
+          <div class="phone-shell">
+            <div class="phone-island"></div>
+            <div class="phone-statusbar">
+              <span class="phone-time">9:41</span>
+              <div class="phone-status-icons">
+                <svg width="17" height="12" viewBox="0 0 17 12" fill="currentColor"><rect x="0" y="8.5" width="3" height="3.5" rx="0.8"/><rect x="4.5" y="6" width="3" height="6" rx="0.8"/><rect x="9" y="3" width="3" height="9" rx="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="0.8"/></svg>
+                <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M0.5 4C3.5 1 12.5 1 15.5 4"/><path d="M2.8 6.5C5 4.5 11 4.5 13.2 6.5"/><path d="M5.5 9C6.5 8 9.5 8 10.5 9"/><circle cx="8" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg>
+                <svg width="25" height="12" viewBox="0 0 25 12" fill="none" stroke="currentColor"><rect x="0.75" y="0.75" width="20.5" height="10.5" rx="2.25" stroke-width="1.5"/><rect x="2.5" y="2.5" width="15" height="7" rx="1" fill="currentColor" stroke="none"/><path d="M22.25 4C23.25 4 23.25 8 22.25 8" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <div class="phone-content">
               <iframe src="https://parentpass.vercel.app/sos" title="ParentPass SOS" loading="lazy"></iframe>
             </div>
           </div>
