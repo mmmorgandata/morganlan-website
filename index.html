@@ -1398,20 +1398,34 @@
       max-width: 180px;
     }
     /* App Store–style card */
+    .lab-phone-item { flex-shrink: 0; }
     .phone-card {
+      width: 240px;
       background: var(--soft);
       border-radius: 20px;
       overflow: hidden;
-      height: 460px;
       display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      padding: 20px 12px 0;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 0;
+      gap: 14px;
     }
-    .phone-card img {
-      width: 90%;
-      display: block;
+    .lab-phone-caption {
+      font-size: 14px; font-weight: 600; color: var(--ink);
+      text-align: center; line-height: 1.4; max-width: 180px;
+    }
+    .phone-frame {
+      width: 208px; height: 390px;
+      overflow: hidden;
+      border-radius: 16px 16px 0 0;
       flex-shrink: 0;
+    }
+    .phone-frame iframe {
+      width: 390px; height: 844px;
+      border: none;
+      transform: scale(0.5333);
+      transform-origin: top left;
+      pointer-events: none;
     }
 
     .lab-more {
@@ -1889,30 +1903,38 @@
     <div class="lab-phone-track">
 
       <div class="lab-phone-item">
-        <div class="lab-phone-caption">Everything they need, in one place</div>
         <div class="phone-card">
-          <img src="images/pp-screen1.png" alt="ParentPass home screen" />
+          <div class="lab-phone-caption">Everything they need, in one place</div>
+          <div class="phone-frame">
+            <iframe src="https://parentpass.vercel.app/" title="ParentPass home" loading="lazy"></iframe>
+          </div>
         </div>
       </div>
 
       <div class="lab-phone-item">
-        <div class="lab-phone-caption">Airport arrival — step by step</div>
         <div class="phone-card">
-          <img src="images/pp-screen2.png" alt="ParentPass airport arrival" />
+          <div class="lab-phone-caption">Airport arrival — step by step</div>
+          <div class="phone-frame">
+            <iframe src="https://parentpass.vercel.app/entry" title="ParentPass entry" loading="lazy"></iframe>
+          </div>
         </div>
       </div>
 
       <div class="lab-phone-item">
-        <div class="lab-phone-caption">Speak English for them, instantly</div>
         <div class="phone-card">
-          <img src="images/pp-screen3.png" alt="ParentPass voice assist" />
+          <div class="lab-phone-caption">Speak English for them, instantly</div>
+          <div class="phone-frame">
+            <iframe src="https://parentpass.vercel.app/speak" title="ParentPass speak" loading="lazy"></iframe>
+          </div>
         </div>
       </div>
 
       <div class="lab-phone-item">
-        <div class="lab-phone-caption">SOS — help is one tap away</div>
         <div class="phone-card">
-          <img src="images/pp-screen4.png" alt="ParentPass SOS" />
+          <div class="lab-phone-caption">SOS — help is one tap away</div>
+          <div class="phone-frame">
+            <iframe src="https://parentpass.vercel.app/sos" title="ParentPass SOS" loading="lazy"></iframe>
+          </div>
         </div>
       </div>
 
