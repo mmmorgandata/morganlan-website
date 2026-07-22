@@ -1384,7 +1384,7 @@
     .lab-phone-strip::-webkit-scrollbar { display: none; }
     .lab-phone-strip.grabbing { cursor: grabbing; }
     .lab-phone-track {
-      display: flex; gap: 36px;
+      display: flex; gap: 56px;
       width: max-content;
     }
     .lab-phone-item {
@@ -1400,19 +1400,21 @@
     /* App Store–style card */
     .lab-phone-item { flex-shrink: 0; }
     .phone-card {
-      width: 256px;
+      width: 248px;
       background: var(--soft);
       border-radius: 24px;
-      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 22px 20px 0;
+      padding: 22px 18px 0;
       gap: 16px;
     }
     .lab-phone-caption {
       font-size: 14px; font-weight: 600; color: var(--ink);
-      text-align: center; line-height: 1.4; max-width: 190px;
+      text-align: center; line-height: 1.4;
+      min-height: 40px; /* keeps all captions same height regardless of line count */
+      display: flex; align-items: center; justify-content: center;
+      max-width: 190px;
     }
     /* Phone bezel */
     .phone-bezel {
@@ -1433,13 +1435,13 @@
     }
     body.dark .phone-bezel::before { background: #2a2a2a; }
     .phone-frame {
-      width: 216px; height: 400px;
+      width: 212px; height: 460px; /* taller = proper iPhone proportions */
       overflow: hidden;
     }
     .phone-frame iframe {
       width: 390px; height: 844px;
       border: none;
-      transform: scale(0.5538);
+      transform: scale(0.5436);
       transform-origin: top left;
       pointer-events: none;
     }
