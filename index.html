@@ -1340,11 +1340,11 @@
     .lab-app-icon {
       width: 72px; height: 72px;
       border-radius: 18px;
-      background: linear-gradient(135deg, #fff5f6, #ffd6db);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 36px; flex-shrink: 0;
+      overflow: hidden;
+      flex-shrink: 0;
       border: 1px solid var(--hairline);
     }
+    .lab-app-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .lab-app-name { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
     .lab-app-sub  { font-size: 13px; color: var(--muted); margin-top: 3px; }
     .lab-app-links { display: flex; gap: 8px; margin-top: 8px; }
@@ -1352,8 +1352,6 @@
     /* App Store stats row */
     .lab-stats-row {
       display: flex;
-      border-top: 1px solid var(--hairline);
-      border-bottom: 1px solid var(--hairline);
       padding: 14px 0;
       margin-bottom: 28px;
       gap: 0;
@@ -1399,40 +1397,22 @@
       text-align: center; line-height: 1.4;
       max-width: 180px;
     }
-    .phone-mockup {
-      width: 200px; height: 420px;
-      border: 9px solid #1a1a1a;
-      border-radius: 38px;
+    /* App Store–style card */
+    .phone-card {
+      background: var(--soft);
+      border-radius: 20px;
       overflow: hidden;
-      position: relative;
-      background: #f5f5f5;
-      box-shadow: 0 20px 60px rgba(0,0,0,.15), 0 4px 16px rgba(0,0,0,.08);
+      height: 460px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding: 20px 12px 0;
+    }
+    .phone-card img {
+      width: 90%;
+      display: block;
       flex-shrink: 0;
     }
-    body.dark .phone-mockup { border-color: #2a2a2a; }
-    .phone-notch {
-      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 80px; height: 20px;
-      background: #1a1a1a;
-      border-radius: 0 0 14px 14px;
-      z-index: 2; pointer-events: none;
-    }
-    body.dark .phone-notch { background: #2a2a2a; }
-    .phone-mockup img {
-      width: 100%; height: 100%;
-      object-fit: cover; object-position: top;
-      display: block;
-    }
-    /* placeholder when no screenshot yet */
-    .phone-placeholder {
-      width: 100%; height: 100%;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 8px; color: var(--muted); font-size: 12px;
-      text-align: center; padding: 20px;
-      padding-top: 32px;
-    }
-    .phone-placeholder span { font-size: 28px; }
 
     .lab-more {
       display: flex; align-items: center; justify-content: space-between; gap: 20px;
@@ -1862,7 +1842,7 @@
 
   <!-- App header row -->
   <div class="lab-app-row">
-    <div class="lab-app-icon">👶</div>
+    <div class="lab-app-icon"><img src="images/pp-icon.jpg" alt="ParentPass icon" /></div>
     <div>
       <div class="lab-app-name">ParentPass</div>
       <div class="lab-app-sub">爸妈出行手册 · Bilingual travel companion for Chinese parents in the US</div>
@@ -1910,37 +1890,29 @@
 
       <div class="lab-phone-item">
         <div class="lab-phone-caption">Everything they need, in one place</div>
-        <div class="phone-mockup">
-          <div class="phone-notch"></div>
-          <img src="images/pp-screen1.png" alt="ParentPass home screen" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-          <div class="phone-placeholder" style="display:none"><span>🏠</span>Add screenshot:<br>pp-screen1.png</div>
+        <div class="phone-card">
+          <img src="images/pp-screen1.png" alt="ParentPass home screen" />
         </div>
       </div>
 
       <div class="lab-phone-item">
         <div class="lab-phone-caption">Airport arrival — step by step</div>
-        <div class="phone-mockup">
-          <div class="phone-notch"></div>
-          <img src="images/pp-screen2.png" alt="ParentPass airport arrival" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-          <div class="phone-placeholder" style="display:none"><span>✈️</span>Add screenshot:<br>pp-screen2.png</div>
+        <div class="phone-card">
+          <img src="images/pp-screen2.png" alt="ParentPass airport arrival" />
         </div>
       </div>
 
       <div class="lab-phone-item">
         <div class="lab-phone-caption">Speak English for them, instantly</div>
-        <div class="phone-mockup">
-          <div class="phone-notch"></div>
-          <img src="images/pp-screen3.png" alt="ParentPass voice assist" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-          <div class="phone-placeholder" style="display:none"><span>🔊</span>Add screenshot:<br>pp-screen3.png</div>
+        <div class="phone-card">
+          <img src="images/pp-screen3.png" alt="ParentPass voice assist" />
         </div>
       </div>
 
       <div class="lab-phone-item">
         <div class="lab-phone-caption">SOS — help is one tap away</div>
-        <div class="phone-mockup">
-          <div class="phone-notch"></div>
-          <img src="images/pp-screen4.png" alt="ParentPass SOS" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
-          <div class="phone-placeholder" style="display:none"><span>🆘</span>Add screenshot:<br>pp-screen4.png</div>
+        <div class="phone-card">
+          <img src="images/pp-screen4.png" alt="ParentPass SOS" />
         </div>
       </div>
 
@@ -2121,7 +2093,7 @@
 <section id="contact">
   <div class="contact-inner">
 
-    <img class="contact-photo" src="images/contact.jpg" alt="Morgan Lan" />
+    <img class="contact-photo" src="images/contact.JPG" alt="Morgan Lan" />
 
     <div class="contact-content">
       <div class="contact-label">Get in touch</div>
