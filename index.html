@@ -1366,6 +1366,7 @@
       border-right: 1px solid var(--hairline);
     }
     .lab-stat:last-child { border-right: none; }
+    .lab-stat { border-right: none; }
     .lab-stat-top { font-size: 10px; font-weight: 600; letter-spacing: 0.07em; color: var(--muted); text-align: center; }
     .lab-stat-value {
       font-size: 17px; font-weight: 700; color: var(--ink);
@@ -1374,14 +1375,10 @@
     .lab-stat-bottom { font-size: 10px; color: var(--muted); text-align: center; }
     /* Awards cell */
     .lab-stat-award-value {
-      display: flex; align-items: center; gap: 5px;
+      display: flex; align-items: center; gap: 4px;
       font-size: 13px; font-weight: 700; color: var(--ink);
       line-height: 1.25; text-align: center;
     }
-    .lab-stat-award-value .laurel {
-      font-size: 16px; color: var(--muted); line-height: 1; flex-shrink: 0;
-    }
-    .lab-stat-award-value .laurel-right { transform: scaleX(-1); display: inline-block; }
     .laurel-svg { color: var(--muted); flex-shrink: 0; }
 
     /* Phone strip */
@@ -1928,18 +1925,26 @@
     <div class="lab-stat">
       <div class="lab-stat-top">AWARDS</div>
       <div class="lab-stat-award-value">
-        <svg width="16" height="22" viewBox="0 0 16 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="laurel-svg">
-          <path d="M8 20 C8 20 3 16 2 12 C1 8 3 5 5 4 C5 7 4 9 5 11 C6 9 6 6 8 4 C8 7 7 9 8 11 C9 9 9 6 10 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <path d="M8 20 C6 17 3 15 2 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-          <path d="M5 14 C4 13 2 13 1 11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/>
-          <path d="M6.5 17 C5 16 3 16 2 14" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+        <!-- left laurel branch -->
+        <svg width="14" height="26" viewBox="0 0 14 26" fill="currentColor" class="laurel-svg" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 25 Q7 13 8 2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <path d="M7 23 Q3 22 1 20 Q4 21 7 23Z"/>
+          <path d="M7 19 Q2 17 1 15 Q4 17 7 19Z"/>
+          <path d="M7 15 Q2 13 1 10 Q4 13 7 15Z"/>
+          <path d="M7 11 Q3 9 2 6 Q5 9 7 11Z"/>
+          <path d="M8 7 Q5 4 4 2 Q7 4 8 7Z"/>
+          <circle cx="7" cy="25" r="1.3"/>
         </svg>
         <span>Mom's<br>Choice</span>
-        <svg width="16" height="22" viewBox="0 0 16 22" fill="none" xmlns="http://www.w3.org/2000/svg" class="laurel-svg" style="transform:scaleX(-1)">
-          <path d="M8 20 C8 20 3 16 2 12 C1 8 3 5 5 4 C5 7 4 9 5 11 C6 9 6 6 8 4 C8 7 7 9 8 11 C9 9 9 6 10 4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <path d="M8 20 C6 17 3 15 2 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" fill="none"/>
-          <path d="M5 14 C4 13 2 13 1 11" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/>
-          <path d="M6.5 17 C5 16 3 16 2 14" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+        <!-- right laurel branch (mirrored) -->
+        <svg width="14" height="26" viewBox="0 0 14 26" fill="currentColor" class="laurel-svg" style="transform:scaleX(-1)" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7 25 Q7 13 8 2" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <path d="M7 23 Q3 22 1 20 Q4 21 7 23Z"/>
+          <path d="M7 19 Q2 17 1 15 Q4 17 7 19Z"/>
+          <path d="M7 15 Q2 13 1 10 Q4 13 7 15Z"/>
+          <path d="M7 11 Q3 9 2 6 Q5 9 7 11Z"/>
+          <path d="M8 7 Q5 4 4 2 Q7 4 8 7Z"/>
+          <circle cx="7" cy="25" r="1.3"/>
         </svg>
       </div>
       <div class="lab-stat-bottom">Apps</div>
