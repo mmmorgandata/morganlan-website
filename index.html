@@ -162,6 +162,9 @@
     body.dark .nav-home.active { color: #fff; background: rgba(255,255,255,.12); }
     .nav-home-icon { display: none; }
     .nav-home-text { display: inline; }
+    /* desktop: hide the standalone nav-home element */
+    .nav-home { display: none; }
+    .nav-about-desktop { display: list-item; }
 
     .nav-links {
       display: flex;
@@ -1302,9 +1305,10 @@
       }
       .nav-left { padding-right: 6px; margin-right: 4px; border-right: none; }
       #theme-toggle { width: 28px !important; height: 28px !important; }
-      .nav-home { padding: 5px 8px; margin-right: 0; }
+      .nav-home { display: flex; padding: 5px 8px; margin-right: 0; }
       .nav-home-text { display: none; }
       .nav-home-icon { display: flex; align-items: center; }
+      .nav-about-desktop { display: none; }
       .nav-links {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -1550,6 +1554,7 @@
     </a>
     <!-- Center: nav links -->
     <ul class="nav-links">
+      <li class="nav-about-desktop"><a href="#about">About Me</a></li>
       <li><a href="#career">Journey</a></li>
       <li><a href="#projects">Projects</a></li>
       <li><a href="#side-works">Lab</a></li>
