@@ -137,24 +137,31 @@
     #theme-toggle:hover { background: rgba(0,0,0,.08) !important; }
     body.dark #theme-toggle:hover { background: rgba(255,255,255,.10) !important; }
 
-    /* home icon link (replaces "About Me" text) */
+    /* About link (home icon on mobile, text on desktop) */
     .nav-home {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 7px 10px;
+      padding: 8px 26px;
       border-radius: var(--r-full);
       color: var(--muted);
+      font-family: 'Courier Prime', 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
       transition: color .15s, background .15s;
-      margin-right: 2px;
       flex-shrink: 0;
       cursor: pointer;
+      white-space: nowrap;
     }
     body.dark .nav-home { color: rgba(255,255,255,.5); }
     .nav-home:hover { color: var(--ink); background: rgba(0,0,0,.05); }
     body.dark .nav-home:hover { color: #fff; background: rgba(255,255,255,.08); }
     .nav-home.active { color: var(--ink); background: rgba(0,0,0,.06); }
     body.dark .nav-home.active { color: #fff; background: rgba(255,255,255,.12); }
+    .nav-home-icon { display: none; }
+    .nav-home-text { display: inline; }
 
     .nav-links {
       display: flex;
@@ -1296,6 +1303,8 @@
       .nav-left { padding-right: 6px; margin-right: 4px; border-right: none; }
       #theme-toggle { width: 28px !important; height: 28px !important; }
       .nav-home { padding: 5px 8px; margin-right: 0; }
+      .nav-home-text { display: none; }
+      .nav-home-icon { display: flex; align-items: center; }
       .nav-links {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -1457,6 +1466,7 @@
       color: #000;
     }
     body.dark .phone-statusbar { background: #1c1c1e; color: #fff; }
+    body.dark .phone-shell { background: #1c1c1e; }
     .phone-time { font-size: 9px; font-weight: 700; letter-spacing: -0.2px; }
     .phone-status-icons { display: flex; align-items: center; gap: 3px; }
     /* iframe content area */
@@ -1528,12 +1538,15 @@
       </svg>
       </button>
     </div>
-    <!-- Home icon (replaces "About Me") -->
-    <a href="#about" class="nav-home" aria-label="Home">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-        <polyline points="9 22 9 12 15 12 15 22"/>
-      </svg>
+    <!-- About link (text on desktop, icon on mobile) -->
+    <a href="#about" class="nav-home" aria-label="About Me">
+      <span class="nav-home-text">About Me</span>
+      <span class="nav-home-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </span>
     </a>
     <!-- Center: nav links -->
     <ul class="nav-links">
