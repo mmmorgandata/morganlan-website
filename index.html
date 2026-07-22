@@ -1333,68 +1333,122 @@
     }
 
     /* ── Lab section ── */
-    .lab-featured {
-      display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 64px;
-      align-items: center;
-      margin-bottom: 48px;
-    }
-    .lab-info { display: flex; flex-direction: column; gap: 16px; }
-    .lab-app-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 4px;
+    .lab-app-row {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 20px;
     }
     .lab-app-icon {
-      font-size: 36px;
-      width: 64px; height: 64px;
-      border-radius: 16px;
+      width: 72px; height: 72px;
+      border-radius: 18px;
       background: linear-gradient(135deg, #fff5f6, #ffd6db);
       display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
+      font-size: 36px; flex-shrink: 0;
+      border: 1px solid var(--hairline);
     }
     .lab-app-name { font-size: 22px; font-weight: 700; color: var(--ink); letter-spacing: -0.3px; }
-    .lab-app-sub  { font-size: 13px; color: var(--muted); margin-top: 2px; }
-    .lab-desc     { font-size: 15px; color: var(--body); line-height: 1.7; }
-    /* Phone mockup */
-    .phone-mockup-wrap { display: flex; justify-content: center; }
+    .lab-app-sub  { font-size: 13px; color: var(--muted); margin-top: 3px; }
+    .lab-app-links { display: flex; gap: 8px; margin-top: 8px; }
+
+    /* App Store stats row */
+    .lab-stats-row {
+      display: flex;
+      border-top: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--hairline);
+      padding: 14px 0;
+      margin-bottom: 28px;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .lab-stats-row::-webkit-scrollbar { display: none; }
+    .lab-stat {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 3px; flex: 1; min-width: 90px;
+      padding: 0 12px;
+      border-right: 1px solid var(--hairline);
+    }
+    .lab-stat:last-child { border-right: none; }
+    .lab-stat-value {
+      font-size: 17px; font-weight: 700; color: var(--ink);
+      letter-spacing: -0.3px; white-space: nowrap;
+    }
+    .lab-stat-stars { color: #666; font-size: 11px; letter-spacing: 1px; }
+    .lab-stat-label { font-size: 11px; color: var(--muted); text-align: center; line-height: 1.4; }
+
+    /* Phone strip */
+    .lab-phone-strip {
+      overflow-x: auto; overflow-y: visible;
+      scrollbar-width: none;
+      margin: 0 -64px;
+      padding: 0 64px 8px;
+      cursor: grab;
+    }
+    .lab-phone-strip::-webkit-scrollbar { display: none; }
+    .lab-phone-strip.grabbing { cursor: grabbing; }
+    .lab-phone-track {
+      display: flex; gap: 20px;
+      width: max-content;
+    }
+    .lab-phone-item {
+      display: flex; flex-direction: column; gap: 14px;
+      align-items: center;
+      width: 220px; flex-shrink: 0;
+    }
+    .lab-phone-caption {
+      font-size: 14px; font-weight: 600; color: var(--ink);
+      text-align: center; line-height: 1.4;
+      max-width: 180px;
+    }
     .phone-mockup {
-      width: 240px; height: 500px;
-      border: 10px solid #1a1a1a;
-      border-radius: 44px;
+      width: 200px; height: 420px;
+      border: 9px solid #1a1a1a;
+      border-radius: 38px;
       overflow: hidden;
       position: relative;
-      background: #fff;
-      box-shadow: 0 32px 80px rgba(0,0,0,.18), 0 8px 24px rgba(0,0,0,.10);
+      background: #f5f5f5;
+      box-shadow: 0 20px 60px rgba(0,0,0,.15), 0 4px 16px rgba(0,0,0,.08);
+      flex-shrink: 0;
     }
-    body.dark .phone-mockup { border-color: #333; }
+    body.dark .phone-mockup { border-color: #2a2a2a; }
     .phone-notch {
       position: absolute; top: 0; left: 50%; transform: translateX(-50%);
-      width: 90px; height: 22px;
+      width: 80px; height: 20px;
       background: #1a1a1a;
-      border-radius: 0 0 16px 16px;
+      border-radius: 0 0 14px 14px;
       z-index: 2; pointer-events: none;
     }
-    body.dark .phone-notch { background: #333; }
-    .phone-mockup iframe {
-      position: absolute; top: 0; left: 0;
-      width: 375px; height: 812px;
-      border: none;
-      transform: scale(0.587);
-      transform-origin: top left;
+    body.dark .phone-notch { background: #2a2a2a; }
+    .phone-mockup img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top;
+      display: block;
     }
+    /* placeholder when no screenshot yet */
+    .phone-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; color: var(--muted); font-size: 12px;
+      text-align: center; padding: 20px;
+      padding-top: 32px;
+    }
+    .phone-placeholder span { font-size: 28px; }
+
     .lab-more {
       display: flex; align-items: center; justify-content: space-between; gap: 20px;
-      padding: 20px 24px;
+      padding: 20px 24px; margin-top: 36px;
       border: 1px solid var(--hairline);
       border-radius: var(--r-md);
       font-size: 14px; color: var(--muted);
     }
     @media (max-width: 900px) {
-      .lab-featured { grid-template-columns: 1fr; gap: 36px; }
-      .phone-mockup-wrap { order: -1; }
+      .lab-phone-strip { margin: 0 -24px; padding: 0 24px 8px; }
+    }
+    @media (max-width: 600px) {
+      .lab-phone-strip { margin: 0 -20px; padding: 0 20px 8px; }
+      .lab-stats-row { gap: 0; }
+      .lab-stat { min-width: 72px; padding: 0 8px; }
+      .lab-stat-value { font-size: 15px; }
     }
   </style>
 </head>
@@ -1806,48 +1860,90 @@
   <div class="section-label">Personal builds &lt;/&gt;</div>
   <h2 class="section-title">Side Works</h2>
 
-  <!-- ParentPass featured -->
-  <div class="lab-featured">
-    <div class="lab-info">
-      <div class="lab-app-header">
-        <div class="lab-app-icon">👶</div>
-        <div>
-          <div class="lab-app-name">ParentPass</div>
-          <div class="lab-app-sub">爸妈出行手册</div>
-        </div>
-        <span class="wip-badge" style="margin-left:auto;align-self:flex-start;">Live</span>
-      </div>
-      <p class="lab-desc">Bilingual travel companion PWA for Chinese-speaking parents visiting their kids in the US. Real-time photo translation of menus, signs, and notices via Claude Vision API. Offline-first, deployed via WeChat — no install required.</p>
-      <div class="project-stats">
-        <span class="stat-pill">PWA · No Install</span>
-        <span class="stat-pill">Offline-First</span>
-        <span class="stat-pill">Solo-built</span>
-      </div>
-      <div class="project-tags">
-        <span class="tech-tag">React 18</span>
-        <span class="tech-tag">Tailwind CSS</span>
-        <span class="tech-tag">Claude Vision API</span>
-        <span class="tech-tag">Vercel</span>
-        <span class="tech-tag">WeChat</span>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
-        <a href="https://parentpass.vercel.app/" target="_blank" class="project-link" style="background:var(--rausch);color:#fff !important;border-color:var(--rausch);">
+  <!-- App header row -->
+  <div class="lab-app-row">
+    <div class="lab-app-icon">👶</div>
+    <div>
+      <div class="lab-app-name">ParentPass</div>
+      <div class="lab-app-sub">爸妈出行手册 · Bilingual travel companion for Chinese parents in the US</div>
+      <div class="lab-app-links">
+        <a href="https://parentpass.vercel.app/" target="_blank" class="project-link" style="background:var(--rausch);color:#fff !important;border-color:var(--rausch);padding:6px 14px;font-size:12px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Live Demo
         </a>
-        <a href="https://github.com/mmmorgandata/parentpass" target="_blank" class="project-link">
+        <a href="https://github.com/mmmorgandata/parentpass" target="_blank" class="project-link" style="padding:6px 14px;font-size:12px;">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
           GitHub
         </a>
       </div>
     </div>
+  </div>
 
-    <!-- Phone mockup -->
-    <div class="phone-mockup-wrap">
-      <div class="phone-mockup">
-        <div class="phone-notch"></div>
-        <iframe src="https://parentpass.vercel.app/" title="ParentPass" loading="lazy"></iframe>
+  <!-- App Store–style stats row -->
+  <div class="lab-stats-row">
+    <div class="lab-stat">
+      <div class="lab-stat-value">5.0</div>
+      <div class="lab-stat-stars">★★★★★</div>
+      <div class="lab-stat-label">2 Ratings<br>(Thanks 爸妈)</div>
+    </div>
+    <div class="lab-stat">
+      <div class="lab-stat-value">PWA</div>
+      <div class="lab-stat-label">No Install<br>Offline-First</div>
+    </div>
+    <div class="lab-stat">
+      <div class="lab-stat-value">Solo</div>
+      <div class="lab-stat-label">Developer<br>Morgan Lan</div>
+    </div>
+    <div class="lab-stat">
+      <div class="lab-stat-value">中·EN</div>
+      <div class="lab-stat-label">Languages<br>Bilingual</div>
+    </div>
+    <div class="lab-stat">
+      <div class="lab-stat-value">Travel</div>
+      <div class="lab-stat-label">Category<br>Family</div>
+    </div>
+  </div>
+
+  <!-- Phone strip -->
+  <div class="lab-phone-strip" id="lab-phone-strip">
+    <div class="lab-phone-track">
+
+      <div class="lab-phone-item">
+        <div class="lab-phone-caption">Everything they need, in one place</div>
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <img src="images/pp-screen1.png" alt="ParentPass home screen" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="phone-placeholder" style="display:none"><span>🏠</span>Add screenshot:<br>pp-screen1.png</div>
+        </div>
       </div>
+
+      <div class="lab-phone-item">
+        <div class="lab-phone-caption">Airport arrival — step by step</div>
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <img src="images/pp-screen2.png" alt="ParentPass airport arrival" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="phone-placeholder" style="display:none"><span>✈️</span>Add screenshot:<br>pp-screen2.png</div>
+        </div>
+      </div>
+
+      <div class="lab-phone-item">
+        <div class="lab-phone-caption">Speak English for them, instantly</div>
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <img src="images/pp-screen3.png" alt="ParentPass voice assist" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="phone-placeholder" style="display:none"><span>🔊</span>Add screenshot:<br>pp-screen3.png</div>
+        </div>
+      </div>
+
+      <div class="lab-phone-item">
+        <div class="lab-phone-caption">SOS — help is one tap away</div>
+        <div class="phone-mockup">
+          <div class="phone-notch"></div>
+          <img src="images/pp-screen4.png" alt="ParentPass SOS" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+          <div class="phone-placeholder" style="display:none"><span>🆘</span>Add screenshot:<br>pp-screen4.png</div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -2146,6 +2242,16 @@
     lastScrollY = y;
   }, { passive: true });
 
+
+  // ── Lab phone strip: drag to scroll ──
+  const labStrip = document.getElementById('lab-phone-strip');
+  if (labStrip) {
+    let isDown2 = false, startX2, scrollLeft2;
+    labStrip.addEventListener('mousedown', e => { isDown2 = true; labStrip.classList.add('grabbing'); startX2 = e.pageX - labStrip.offsetLeft; scrollLeft2 = labStrip.scrollLeft; });
+    labStrip.addEventListener('mouseleave', () => { isDown2 = false; labStrip.classList.remove('grabbing'); });
+    labStrip.addEventListener('mouseup', () => { isDown2 = false; labStrip.classList.remove('grabbing'); });
+    labStrip.addEventListener('mousemove', e => { if (!isDown2) return; e.preventDefault(); labStrip.scrollLeft = scrollLeft2 - (e.pageX - labStrip.offsetLeft - startX2) * 1.2; });
+  }
 
   // ── Photo strip: drag to scroll ──
   const strip = document.getElementById('photo-strip');
