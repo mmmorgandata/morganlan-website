@@ -1379,6 +1379,32 @@
       /* Contact */
       .contact-inner { padding: 32px 20px; }
       .contact-headline { font-size: 28px; }
+
+      /* ── Timeline: de-card on mobile ── */
+      .timeline { padding-left: 20px; }
+      .timeline::before { left: 4px; }
+      .timeline-dot { left: -28px; width: 12px; height: 12px; top: 24px; }
+      .timeline-item {
+        border: none;
+        background: transparent;
+        box-shadow: none !important;
+        border-radius: 0;
+        padding: 16px 0 28px 0;
+        margin-bottom: 0;
+        transform: none !important;
+        border-bottom: 1px solid var(--hairline);
+      }
+      .timeline-item:last-child { border-bottom: none; }
+      .timeline-item:hover { box-shadow: none !important; transform: none !important; }
+      .timeline-header {
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 12px;
+      }
+      .timeline-date { align-self: flex-start; margin-top: 6px; }
+      .timeline-role { font-size: 15px; }
+      .timeline-company { font-size: 13px; }
+      .timeline-story { font-size: 13px; line-height: 1.7; }
     }
 
     /* ── Lab section ── */
