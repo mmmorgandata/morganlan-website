@@ -663,10 +663,11 @@
       padding: 24px;
       background: var(--canvas);
       border: 1px solid var(--hairline);
+      border-left: 3px solid var(--hairline);
       border-radius: var(--r-md);
-      transition: box-shadow .2s, transform .2s;
+      transition: border-left-color .2s;
     }
-    .timeline-item:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+    .timeline-item:hover { border-left-color: var(--rausch); }
     .timeline-dot {
       position: absolute;
       left: -41px;
@@ -1392,7 +1393,6 @@
         padding: 16px 0 28px 0;
         margin-bottom: 0;
         transform: none !important;
-        border-bottom: 1px solid var(--hairline);
       }
       .timeline-item:last-child { border-bottom: none; }
       .timeline-item:hover { box-shadow: none !important; transform: none !important; }
