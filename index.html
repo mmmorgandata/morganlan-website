@@ -735,6 +735,61 @@
       margin-top: 12px;
     }
 
+    /* ── Newsletter Journey ─────────────────────────────────────── */
+    .journey-feed { max-width: 680px; margin: 0 auto; }
+    .journey-entry { padding: 48px 0; border-top: 1px solid var(--hairline); }
+    .journey-entry:first-child { border-top: none; padding-top: 0; }
+    .journey-entry-meta {
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    .journey-entry-title {
+      font-family: 'Courier Prime', monospace;
+      font-size: 22px; font-weight: 700;
+      color: var(--ink); letter-spacing: -0.3px;
+      margin-bottom: 20px;
+    }
+    .journey-prose {
+      font-size: 15px; color: var(--body);
+      line-height: 1.8; margin-bottom: 14px;
+    }
+    .journey-prose:last-of-type { margin-bottom: 0; }
+    .journey-img {
+      width: 100%; border-radius: var(--r-md);
+      margin: 28px 0; display: block;
+      object-fit: cover; max-height: 360px;
+    }
+    .journey-stats {
+      display: flex; margin: 28px 0;
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-md); overflow: hidden;
+    }
+    .journey-stat {
+      flex: 1; padding: 20px 16px; text-align: center;
+      border-right: 1px solid var(--hairline);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .journey-stat:last-child { border-right: none; }
+    .journey-stat-num {
+      font-size: 30px; font-weight: 700;
+      color: var(--rausch); letter-spacing: -1px; line-height: 1;
+    }
+    .journey-stat-label {
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .journey-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px; }
+
+    @media (max-width: 600px) {
+      .journey-entry { padding: 36px 0; }
+      .journey-entry-title { font-size: 17px; }
+      .journey-prose { font-size: 14px; }
+      .journey-stat-num { font-size: 22px; }
+      .journey-stat { padding: 14px 8px; }
+    }
+
     /* ── 3. Projects ───────────────────────────────────────────── */
     #projects { }
     .projects-grid {
@@ -1816,61 +1871,64 @@
   <div class="section-label">Experience</div>
   <h2 class="section-title">My Journey</h2>
 
-  <div class="timeline">
+  <div class="journey-feed">
 
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-header">
-        <div>
-          <div class="timeline-role">Business Analyst Intern</div>
-          <div class="timeline-company"><img src="images/citic-logo.png" alt="CITIC" />CITIC Securities Co., Ltd. · Guangzhou</div>
-        </div>
-        <span class="timeline-date">May – Aug 2023</span>
-      </div>
-      <p class="timeline-story">My professional journey kicked off the summer before my senior year, as a Business Analyst Intern at CITIC Securities in Guangzhou — my first real look at how financial institutions operate from the inside.</p>
-      <p class="timeline-story">The work centered on supporting a PE firm's go-to-market push: analyzing sales performance data, building investor roadshow materials, and helping position complex financial products for client delivery. I was also working directly with clients as an analyst-slash-advisor, which pushed me to distill dense quantitative research into something people could actually act on.</p>
-      <p class="timeline-story">It was here I first ran into the gap between being analytically right and being understood — and realized that closing that gap is often more valuable than the analysis itself.</p>
-      <div>
-        <span class="timeline-tag">Business Analysis</span>
-        <span class="timeline-tag">Investor Relations</span>
-        <span class="timeline-tag">Go-to-Market</span>
+    <!-- CITIC -->
+    <div class="journey-entry">
+      <div class="journey-entry-meta">CITIC Securities Co., Ltd. · Guangzhou · May – Aug 2023</div>
+      <h3 class="journey-entry-title">Business Analyst Intern</h3>
+      <p class="journey-prose">My professional journey kicked off the summer before my senior year, at CITIC Securities in Guangzhou — my first real look at how financial institutions operate from the inside.</p>
+      <p class="journey-prose">The work centered on supporting a PE firm's go-to-market push: analyzing sales performance data, building investor roadshow materials, and helping position complex financial products for client delivery. I was also working directly with clients as an analyst-slash-advisor, which pushed me to distill dense quantitative research into something people could actually act on.</p>
+      <p class="journey-prose">It was here I first ran into the gap between being analytically right and being understood — and realized that closing that gap is often more valuable than the analysis itself.</p>
+      <!-- 替换为你的 CITIC 工作现场照路径 -->
+      <img class="journey-img" src="images/citic-work.jpg" alt="CITIC Securities office" />
+      <div class="journey-tags">
+        <span class="tech-tag">Business Analysis</span>
+        <span class="tech-tag">Investor Relations</span>
+        <span class="tech-tag">Go-to-Market</span>
       </div>
     </div>
 
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-header">
-        <div>
-          <div class="timeline-role">Data Analyst Intern, Cold Chain Capacity Planning</div>
-          <div class="timeline-company"><img src="images/sf-logo.png" alt="SF Express" />SF Express Co., Ltd. · Shenzhen</div>
+    <!-- SF Express -->
+    <div class="journey-entry">
+      <div class="journey-entry-meta">SF Express Co., Ltd. · Shenzhen · May – Aug 2024</div>
+      <h3 class="journey-entry-title">Data Analyst Intern, Cold Chain Capacity Planning</h3>
+      <p class="journey-prose">That experience convinced me I wanted to go deeper on the technical and operational side. The summer after graduation, I joined SF Express's cold chain capacity planning team in Shenzhen.</p>
+      <p class="journey-prose">Cold chain is unforgiving — a temperature excursion doesn't just mean a complaint, it means spoiled product and broken SLAs. I worked directly with e-commerce merchant teams to understand what the operational data was really saying, then built a Python optimization model for staffing and fleet deployment under demand uncertainty. Alongside that, I set up SQL and ERP dashboards to monitor the cold chain daily across outbound, sorting, and last-mile delivery.</p>
+      <div class="journey-stats">
+        <div class="journey-stat">
+          <span class="journey-stat-num">$20K+</span>
+          <span class="journey-stat-label">Monthly Cost Savings</span>
         </div>
-        <span class="timeline-date">May – Aug 2024</span>
+        <div class="journey-stat">
+          <span class="journey-stat-num">98%+</span>
+          <span class="journey-stat-label">On-Time Delivery</span>
+        </div>
+        <div class="journey-stat">
+          <span class="journey-stat-num">&lt;1.5%</span>
+          <span class="journey-stat-label">Temp Excursion Rate</span>
+        </div>
       </div>
-      <p class="timeline-story">That experience convinced me I wanted to go deeper on the technical and operational side. The summer after graduation, I joined SF Express's cold chain capacity planning team in Shenzhen.</p>
-      <p class="timeline-story">Cold chain is unforgiving — a temperature excursion doesn't just mean a complaint, it means spoiled product and broken SLAs. I worked directly with e-commerce merchant teams to understand what the operational data was really saying, then built a Python optimization model for staffing and fleet deployment under demand uncertainty. Alongside that, I set up SQL and ERP dashboards to monitor the cold chain daily across outbound, sorting, and last-mile delivery.</p>
-      <p class="timeline-story">The model held up in production: <strong>98%+ end-to-end on-time delivery</strong>, <strong>$20K+ in monthly cost savings</strong>, and temperature excursions consistently held under 1.5%.</p>
-      <div>
-        <span class="timeline-tag">Python</span>
-        <span class="timeline-tag">SQL</span>
-        <span class="timeline-tag">Supply Chain</span>
-        <span class="timeline-tag">Optimization</span>
+      <p class="journey-prose">The model held up in production — not just in the spreadsheet. Keeping temperature excursions under 1.5% became a trackable, daily reality rather than an aspiration.</p>
+      <div class="journey-tags">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">SQL</span>
+        <span class="tech-tag">Supply Chain</span>
+        <span class="tech-tag">Optimization</span>
       </div>
     </div>
 
-    <div class="timeline-item">
-      <div class="timeline-dot"></div>
-      <div class="timeline-header">
-        <div>
-          <div class="timeline-role">Technical Support Specialist <span style="font-weight:400;font-size:13px;color:var(--muted)">(part-time)</span></div>
-          <div class="timeline-company"><img src="images/uw-logo.png" alt="UW" />University of Washington · Seattle</div>
-        </div>
-        <span class="timeline-date">Sep 2025 – Jun 2026</span>
-      </div>
-      <p class="timeline-story">Back in Seattle for my master's at UW, I took on a part-time Technical Support Specialist role alongside my studies — a different kind of operational work, but operational nonetheless.</p>
-      <p class="timeline-story">The job was about reliability: managing classroom IT access, keeping Zoom and LMS sessions running smoothly for 100+ students, and troubleshooting issues in real time before they could derail a lecture. Less about building systems, more about making sure the ones that exist don't fail when people are counting on them.</p>
-      <div>
-        <span class="timeline-tag">IT Ops</span>
-        <span class="timeline-tag">Zoom / LMS</span>
+    <!-- UW -->
+    <div class="journey-entry">
+      <div class="journey-entry-meta">University of Washington · Seattle · Sep 2025 – Jun 2026</div>
+      <h3 class="journey-entry-title">Technical Support Specialist <span style="font-weight:400;font-size:15px;color:var(--muted)">(part-time)</span></h3>
+      <!-- 替换为你的 UW 校园图路径 -->
+      <img class="journey-img" src="images/uw-campus.jpg" alt="University of Washington campus" />
+      <p class="journey-prose">Back in Seattle for my master's at UW, I took on a part-time support role alongside my studies — a different kind of operational work, but operational nonetheless.</p>
+      <p class="journey-prose">The job was about reliability: managing classroom IT access, keeping Zoom and LMS sessions running smoothly for 100+ students, and troubleshooting issues in real time before they could derail a lecture. Less about building systems, more about making sure the ones that exist don't fail when people are counting on them.</p>
+      <div class="journey-tags">
+        <span class="tech-tag">IT Ops</span>
+        <span class="tech-tag">Zoom / LMS</span>
       </div>
     </div>
 
