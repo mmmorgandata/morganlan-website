@@ -12,7 +12,7 @@
     :root {
       --rausch:      #ff385c;
       --rausch-dark: #e00b41;
-      --ink:         #222222;
+      --ink:         #000000;
       --body:        #3f3f3f;
       --muted:       #6a6a6a;
       --hairline:    #dddddd;
@@ -41,9 +41,9 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       min-height: 100vh;
-      font-family: Georgia, 'Times New Roman', serif;
+      font-family: 'Lora', Georgia, serif;
       font-size: 16px;
-      color: #111;
+      color: var(--ink);
       background: var(--canvas);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden; /* prevent horizontal overflow from coverflow cards */
