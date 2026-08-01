@@ -868,24 +868,19 @@
       -webkit-overflow-scrolling: touch;
     }
     .project-overlay.open { transform: translateX(0); }
-    .project-overlay-nav {
-      position: sticky;
-      top: 0;
-      background: var(--canvas);
-      padding: 28px 64px 0;
-      z-index: 10;
-    }
     .project-back-btn {
       background: none; border: none; cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      font-size: 13px; font-weight: 500;
+      font-family: 'Courier Prime', 'Courier New', monospace;
+      font-size: 12px; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
       color: var(--muted);
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 0;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0; margin-bottom: 40px;
+      text-decoration: none;
       transition: color .15s;
     }
-    .project-back-btn:hover { color: var(--ink); }
-    .project-back-btn svg { width: 15px; height: 15px; }
+    .project-back-btn:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+    .project-back-btn svg { width: 13px; height: 13px; }
     /* Article typography */
     .project-article {
       max-width: 720px;
@@ -962,8 +957,6 @@
       border: none; border-top: 1px solid var(--hairline);
       margin: 40px 0;
     }
-    /* card click affordance */
-    .project-card { cursor: pointer; }
     .project-read-btn {
       font-family: Georgia, 'Times New Roman', serif;
       font-size: 14px; font-weight: 400;
@@ -977,12 +970,11 @@
     }
     .project-read-btn:hover { opacity: .6; }
     @media (max-width: 900px) {
-      .project-overlay-nav { padding: 24px 24px 0; }
-      .project-article { padding: 20px 24px 80px; }
+      .project-article { padding: 36px 24px 80px; }
       .project-article-title { font-size: 26px; }
     }
     @media (max-width: 600px) {
-      .project-overlay-nav { padding: 20px 20px 0; }
+      .project-article { padding: 28px 20px 60px; }
       .project-article { padding: 28px 20px 60px; }
       .project-article-title { font-size: 22px; }
       .project-article h2 { font-size: 18px; }
@@ -2056,7 +2048,7 @@
   <div class="projects-grid">
 
     <!-- YOLOv8 Traffic Perception -->
-    <div class="project-card" onclick="openProject('yolo')">
+    <div class="project-card">
       <div class="project-emoji">🎥</div>
       <div class="project-name">Real-Time Traffic Perception System</div>
       <p class="project-desc">
@@ -2075,7 +2067,7 @@
     </div>
 
     <!-- SSP-MDP -->
-    <div class="project-card" onclick="openProject('mdp')">
+    <div class="project-card">
       <div class="project-emoji">🧠</div>
       <div class="project-name">Spaced Repetition via SSP-MDP</div>
       <p class="project-desc">
@@ -2095,7 +2087,7 @@
     </div>
 
     <!-- AGV Scheduling -->
-    <div class="project-card" onclick="openProject('agv')">
+    <div class="project-card">
       <div class="project-emoji">🤖</div>
       <div class="project-name">AGV Scheduling for Cloud Warehouse</div>
       <p class="project-desc">
@@ -2115,7 +2107,7 @@
     </div>
 
     <!-- Highway Accident -->
-    <div class="project-card" onclick="openProject('highway')">
+    <div class="project-card">
       <div class="project-emoji">🛣️</div>
       <div class="project-name">Highway Accident Analysis System</div>
       <p class="project-desc">
@@ -2139,12 +2131,6 @@
 
 <!-- ── Project Detail Overlay ── -->
 <div id="project-overlay" class="project-overlay" role="dialog" aria-modal="true">
-  <nav class="project-overlay-nav">
-    <button class="project-back-btn" onclick="closeProject()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Back to Projects
-    </button>
-  </nav>
   <div class="project-article" id="project-article-content"></div>
 </div>
 
@@ -2819,6 +2805,10 @@ function openProject(id, pushState = true) {
   const content = document.getElementById('project-article-content');
 
   content.innerHTML = `
+    <button class="project-back-btn" onclick="history.back()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Projects
+    </button>
     <p class="project-article-meta">${data.meta}</p>
     <h1 class="project-article-title">${data.title}</h1>
     ${data.content}
