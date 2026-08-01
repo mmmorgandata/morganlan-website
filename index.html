@@ -7,6 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@300;400;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet" />
+  <!-- highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
   <style>
     /* ── Design tokens ─────────────────────────────────────────── */
     :root {
@@ -846,6 +853,143 @@
     }
     .project-link:hover { border-color: var(--ink); background: var(--soft); }
     .project-link svg { width: 14px; height: 14px; }
+
+    /* ── Project Overlay ────────────────────────────────────────── */
+    .project-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 600;
+      background: var(--canvas);
+      transform: translateX(100%);
+      transition: transform .4s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .project-overlay.open { transform: translateX(0); }
+    .project-overlay-nav {
+      position: sticky;
+      top: 0;
+      background: var(--canvas);
+      border-bottom: 1px solid var(--hairline);
+      padding: 14px 64px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 10;
+    }
+    .project-back-btn {
+      background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 500;
+      color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 0;
+      transition: color .15s;
+    }
+    .project-back-btn:hover { color: var(--ink); }
+    .project-back-btn svg { width: 16px; height: 16px; }
+    /* Article typography */
+    .project-article {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 52px 64px 100px;
+    }
+    .project-article-title {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 34px; font-weight: 700;
+      color: var(--ink); letter-spacing: -0.5px;
+      line-height: 1.2; margin-bottom: 8px;
+    }
+    .project-article-meta {
+      font-size: 13px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 40px;
+    }
+    .project-article h2 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 22px; font-weight: 700;
+      color: var(--ink); margin: 40px 0 12px;
+    }
+    .project-article h3 {
+      font-family: 'Lora', Georgia, serif;
+      font-size: 18px; font-weight: 600;
+      color: var(--ink); margin: 28px 0 10px;
+    }
+    .project-article p {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 16px; color: var(--ink);
+      line-height: 1.8; margin-bottom: 16px;
+    }
+    .project-article ul {
+      margin: 0 0 16px 0; padding-left: 20px;
+    }
+    .project-article li {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 16px; color: var(--ink);
+      line-height: 1.8; margin-bottom: 6px;
+    }
+    .project-article pre {
+      background: #1a1a2e;
+      border-radius: var(--r-sm);
+      padding: 20px 24px;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    .project-article code {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 13px;
+    }
+    .project-article p code, .project-article li code {
+      background: var(--soft);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--rausch);
+    }
+    .project-article figure { margin: 28px 0; }
+    .project-article figure img {
+      width: 100%; border-radius: var(--r-md);
+      display: block;
+    }
+    .project-article figcaption {
+      font-family: 'Inter', sans-serif;
+      font-size: 12px; color: var(--muted);
+      text-align: center; margin-top: 8px;
+      letter-spacing: 0.04em;
+    }
+    .project-article .katex-display {
+      margin: 20px 0; overflow-x: auto;
+    }
+    .project-article hr {
+      border: none; border-top: 1px solid var(--hairline);
+      margin: 40px 0;
+    }
+    /* card click affordance */
+    .project-card { cursor: pointer; }
+    .project-read-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600;
+      color: var(--ink); margin-top: auto;
+      padding: 8px 14px;
+      border: 1.5px solid var(--hairline);
+      border-radius: var(--r-full);
+      background: none; cursor: pointer;
+      width: fit-content;
+      transition: border-color .15s, background .15s;
+    }
+    .project-read-btn:hover { border-color: var(--ink); background: var(--soft); }
+    @media (max-width: 900px) {
+      .project-overlay-nav { padding: 14px 24px; }
+      .project-article { padding: 36px 24px 80px; }
+      .project-article-title { font-size: 26px; }
+    }
+    @media (max-width: 600px) {
+      .project-overlay-nav { padding: 12px 20px; }
+      .project-article { padding: 28px 20px 60px; }
+      .project-article-title { font-size: 22px; }
+      .project-article h2 { font-size: 18px; }
+      .project-article p, .project-article li { font-size: 15px; }
+    }
 
     /* ── 4. Side Works ─────────────────────────────────────────── */
     #side-works { }
@@ -1832,11 +1976,6 @@
     </div>
 
     <div class="meta-block">
-      <div class="meta-block-label">Based in</div>
-      <div class="meta-block-value">Seattle, WA · Open to relocating</div>
-    </div>
-
-    <div class="meta-block">
       <div class="meta-block-label">Skills &amp; Certifications</div>
       <div class="skill-icons" style="margin-top:6px;">
         <span class="skill-badge" data-tip="Python"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python" /></span>
@@ -1846,6 +1985,11 @@
         <span class="skill-badge" data-tip="Power BI"><img src="https://upload.wikimedia.org/wikipedia/commons/c/cf/New_Power_BI_Logo.svg" alt="Power BI" /></span>
         <span class="skill-badge" data-tip="MATLAB"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/matlab/matlab-original.svg" alt="MATLAB" /></span>
       </div>
+    </div>
+
+    <div class="meta-block">
+      <div class="meta-block-label">Based in</div>
+      <div class="meta-block-value">Seattle, WA · Open to relocating</div>
     </div>
 
   </div>
@@ -1913,44 +2057,32 @@
 
   <div class="projects-grid">
 
-    <!-- Featured: ParentPass -->
-    <div class="project-card featured">
-      <div>
-        <div class="project-emoji">🗺️</div>
-        <div class="project-name">ParentPass</div>
-        <p class="project-desc">
-          Bilingual travel companion PWA for Chinese-speaking parents visiting international students in the US.
-          Real-time photo translation of menus, signs, and notices via Claude Vision API. Offline-first, deployed via WeChat link — no installation required.
-        </p>
-        <div class="project-stats">
-          <span class="stat-pill">PWA · No Install</span>
-          <span class="stat-pill">Offline-First</span>
-          <span class="stat-pill">China-Accessible</span>
-        </div>
+    <!-- YOLOv8 Traffic Perception -->
+    <div class="project-card" onclick="openProject('yolo')">
+      <div class="project-emoji">🎥</div>
+      <div class="project-name">Real-Time Traffic Perception System</div>
+      <p class="project-desc">
+        End-to-end dashcam perception pipeline combining improved YOLOv8 detection, DeepSORT multi-object tracking, and monocular distance estimation for real-time rear-end collision warnings.
+      </p>
+      <div class="project-stats">
+        <span class="stat-pill">YOLOv8 + DeepSORT</span>
+        <span class="stat-pill">Edge Deployment</span>
       </div>
-      <div>
-        <div class="project-tags" style="margin-bottom: 16px;">
-          <span class="tech-tag">React 18</span>
-          <span class="tech-tag">Tailwind CSS</span>
-          <span class="tech-tag">Vercel</span>
-          <span class="tech-tag">Claude Haiku Vision API</span>
-          <span class="tech-tag">WeChat</span>
-        </div>
-        <a href="https://github.com/mmmorgandata/parentpass" target="_blank" class="project-link">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-          View on GitHub
-        </a>
+      <div class="project-tags">
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">PyTorch</span>
+        <span class="tech-tag">Computer Vision</span>
       </div>
+      <button class="project-read-btn" onclick="openProject('yolo')">Read more →</button>
     </div>
 
     <!-- SSP-MDP -->
-    <div class="project-card">
+    <div class="project-card" onclick="openProject('mdp')">
       <div class="project-emoji">🧠</div>
       <div class="project-name">Spaced Repetition via SSP-MDP</div>
       <p class="project-desc">
         Formulated a 96-state MDP to optimize vocabulary scheduling, calibrated on 220M real learning interactions.
         Best threshold policy recovered 97% of optimal performance at +2.7% cost overhead.
-        Discovered the optimal policy is non-monotone — a "desirable difficulty" effect.
       </p>
       <div class="project-stats">
         <span class="stat-pill">220M interactions</span>
@@ -1960,16 +2092,12 @@
         <span class="tech-tag">Python</span>
         <span class="tech-tag">MDP</span>
         <span class="tech-tag">Value Iteration</span>
-        <span class="tech-tag">Monte Carlo</span>
       </div>
-      <a href="https://github.com/mmmorgandata/optimal-flashcard-scheduler" target="_blank" class="project-link">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-        View on GitHub
-      </a>
+      <button class="project-read-btn" onclick="openProject('mdp')">Read more →</button>
     </div>
 
     <!-- AGV Scheduling -->
-    <div class="project-card">
+    <div class="project-card" onclick="openProject('agv')">
       <div class="project-emoji">🤖</div>
       <div class="project-name">AGV Scheduling for Cloud Warehouse</div>
       <p class="project-desc">
@@ -1984,32 +2112,43 @@
         <span class="tech-tag">Python</span>
         <span class="tech-tag">CBBA</span>
         <span class="tech-tag">JPS</span>
-        <span class="tech-tag">Robotics</span>
       </div>
+      <button class="project-read-btn" onclick="openProject('agv')">Read more →</button>
     </div>
 
     <!-- Highway Accident -->
-    <div class="project-card">
+    <div class="project-card" onclick="openProject('highway')">
       <div class="project-emoji">🛣️</div>
       <div class="project-name">Highway Accident Analysis System</div>
       <p class="project-desc">
         $55K government-funded contract. Delivered 20% accident reduction and 27% faster emergency response
-        through PSO-optimized Bayesian networks and knowledge graphs built with cross-functional teams.
+        through PSO-optimized Bayesian networks and knowledge graphs.
       </p>
       <div class="project-stats">
         <span class="stat-pill">$55K contract</span>
         <span class="stat-pill">−20% accidents</span>
-        <span class="stat-pill">−27% response time</span>
       </div>
       <div class="project-tags">
         <span class="tech-tag">PSO</span>
         <span class="tech-tag">Bayesian Networks</span>
         <span class="tech-tag">Knowledge Graph</span>
       </div>
+      <button class="project-read-btn" onclick="openProject('highway')">Read more →</button>
     </div>
 
   </div>
 </section>
+
+<!-- ── Project Detail Overlay ── -->
+<div id="project-overlay" class="project-overlay" role="dialog" aria-modal="true">
+  <nav class="project-overlay-nav">
+    <button class="project-back-btn" onclick="closeProject()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back to Projects
+    </button>
+  </nav>
+  <div class="project-article" id="project-article-content"></div>
+</div>
 
 <!-- ── 4. Side Works ── -->
 <section id="side-works">
@@ -2578,6 +2717,147 @@
 
   // Show About Me on load
   showSection('about');
+</script>
+
+<!-- ── Project Detail Scripts ── -->
+<script>
+/* ── Project content ─────────────────────────────────────────── */
+const projectData = {
+
+  yolo: {
+    title: 'Real-Time Traffic Perception System',
+    meta: 'YOLOv8 + DeepSORT · Feb – May 2024 · Guangzhou',
+    content: `
+      <h2>Overview</h2>
+      <p>This project built an end-to-end perception pipeline for dashcam traffic video — combining object detection, multi-object tracking, and monocular distance estimation into a unified real-time system that can issue rear-end collision warnings.</p>
+      <p>The core challenge was the accuracy-latency tradeoff for edge deployment: standard YOLOv8 is accurate but too heavy for real-time inference on embedded hardware. The goal was to close that gap through targeted architectural improvements without sacrificing detection quality on traffic-specific scenes.</p>
+
+      <h2>Detection: Improved YOLOv8</h2>
+      <p>Three modifications were applied to the standard YOLOv8 backbone and neck:</p>
+
+      <h3>GSConv + SlimNeck</h3>
+      <p>Replaced the standard convolutional layers in the neck with <code>GSConv</code> (Group Shuffle Convolution) and adopted the SlimNeck architecture to reduce feature aggregation cost. This cuts parameter count in the neck while preserving multi-scale feature representation.</p>
+
+      <h3>SimAM Attention</h3>
+      <p><code>SimAM</code> is a parameter-free attention module that infers 3D attention weights for each neuron based on a fast closed-form solution — no additional parameters, minimal compute overhead, meaningful signal boost in dense traffic scenes.</p>
+
+      <h3>Wise-IoU Loss</h3>
+      <p>Standard IoU-based losses treat all training samples equally. <code>Wise-IoU</code> introduces a dynamic focusing factor that down-weights geometric outliers and focuses training on ordinarily difficult examples — leading to more stable convergence and better localization on small or partially occluded vehicles.</p>
+
+      <pre><code class="language-python"># Wise-IoU — dynamic focusing factor
+def wise_iou_loss(pred, target, gamma=0.5):
+    iou = compute_iou(pred, target)
+    beta = iou.detach()          # stop-gradient anchor
+    alpha = (1 - beta) ** gamma  # down-weight outliers
+    loss = alpha * (1 - iou)
+    return loss.mean()</code></pre>
+
+      <h2>Tracking: Improved DeepSORT</h2>
+      <p>Standard DeepSORT uses IoU-based association between detections and existing tracks, which degrades when objects overlap or move quickly. This project replaces it with <code>CIoU</code>-based association, which accounts for center distance, aspect ratio, and overlap simultaneously — giving the tracker more geometric signal to work with.</p>
+
+      <pre><code class="language-python"># CIoU association cost matrix (simplified)
+def ciou_cost(detections, tracks):
+    cost = np.zeros((len(detections), len(tracks)))
+    for i, det in enumerate(detections):
+        for j, trk in enumerate(tracks):
+            cost[i, j] = 1 - ciou(det.bbox, trk.bbox)
+    return cost</code></pre>
+
+      <h2>Monocular Distance Estimation</h2>
+      <p>With no depth sensor available, distance is estimated geometrically from the detected bounding box height and a calibrated camera model:</p>
+      <p>\\[ d = \\frac{f \\cdot H_{\\text{real}}}{h_{\\text{bbox}}} \\]</p>
+      <p>where \\(f\\) is focal length, \\(H_{\\text{real}}\\) is the known average vehicle height, and \\(h_{\\text{bbox}}\\) is the detected bounding box height in pixels. A warning is triggered when estimated distance falls below a safety threshold.</p>
+
+      <h2>Evaluation</h2>
+      <p>The system was evaluated on three metrics across the detection and tracking stages:</p>
+      <ul>
+        <li><strong>mAP</strong> — mean Average Precision for detection quality</li>
+        <li><strong>MOTA</strong> (Multi-Object Tracking Accuracy) — combined measure of missed detections, false positives, and identity switches</li>
+        <li><strong>MOTP</strong> (Multi-Object Tracking Precision) — average localization precision of matched tracks</li>
+      </ul>
+      <!-- 替换为实验结果图 -->
+      <!-- <figure><img src="images/yolo-results.jpg" alt="Evaluation results" /><figcaption>Detection and tracking metrics vs. baseline YOLOv8</figcaption></figure> -->
+    `
+  },
+
+  mdp: {
+    title: 'Adaptive Scheduling via Stochastic MDP',
+    meta: 'Python · Mar – Jun 2026 · Seattle',
+    content: `
+      <h2>Overview</h2>
+      <p>This project formulated vocabulary review scheduling as a Stochastic Shortest-Path MDP and derived optimal and near-optimal policies calibrated on 220 million real learning interactions from a language learning platform.</p>
+      <p>Full write-up coming soon.</p>
+      <p>GitHub: <a href="https://github.com/mmmorgandata/optimal-flashcard-scheduler" target="_blank" style="color:var(--rausch)">optimal-flashcard-scheduler →</a></p>
+    `
+  },
+
+  agv: {
+    title: 'AGV Scheduling for Cloud Warehouse',
+    meta: 'Python · 2024 · Guangzhou',
+    content: `
+      <h2>Overview</h2>
+      <p>A two-phase intelligent scheduling framework for Autonomous Ground Vehicle (AGV) task allocation in a cloud warehouse environment.</p>
+      <p>Full write-up coming soon.</p>
+    `
+  },
+
+  highway: {
+    title: 'Highway Accident Analysis System',
+    meta: '$55K Government Contract · Feb 2021 – Apr 2023 · Guangzhou',
+    content: `
+      <h2>Overview</h2>
+      <p>A $55K government-funded SaaS platform for highway accident risk prediction and emergency response optimization, built with a highway management authority.</p>
+      <p>Full write-up coming soon.</p>
+    `
+  }
+};
+
+/* ── Overlay open / close ─────────────────────────────────────── */
+function openProject(id) {
+  const data = projectData[id];
+  if (!data) return;
+
+  const overlay = document.getElementById('project-overlay');
+  const content = document.getElementById('project-article-content');
+
+  content.innerHTML = `
+    <p class="project-article-meta">${data.meta}</p>
+    <h1 class="project-article-title">${data.title}</h1>
+    <hr>
+    ${data.content}
+  `;
+
+  overlay.classList.add('open');
+  overlay.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+
+  // syntax highlighting
+  overlay.querySelectorAll('pre code').forEach(block => {
+    hljs.highlightElement(block);
+  });
+
+  // KaTeX math rendering
+  if (window.renderMathInElement) {
+    renderMathInElement(content, {
+      delimiters: [
+        { left: '\\[', right: '\\]', display: true },
+        { left: '\\(', right: '\\)', display: false }
+      ],
+      throwOnError: false
+    });
+  }
+}
+
+function closeProject() {
+  const overlay = document.getElementById('project-overlay');
+  overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeProject();
+});
 </script>
 </body>
 </html>
