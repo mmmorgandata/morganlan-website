@@ -869,10 +869,8 @@
     /* Sidebar + article layout */
     .project-overlay-layout {
       display: grid;
-      grid-template-columns: 180px 1fr;
+      grid-template-columns: 200px 1fr;
       min-height: 100%;
-      max-width: 1100px;
-      margin: 0 auto;
     }
     .project-sidebar {
       position: sticky;
@@ -880,25 +878,26 @@
       height: 100vh;
       display: flex;
       flex-direction: column;
-      padding: 52px 24px 52px 48px;
+      padding: 52px 16px 52px 40px;
     }
     .project-back-btn {
       background: none; border: none; cursor: pointer;
       font-family: 'Courier Prime', 'Courier New', monospace;
-      font-size: 11px; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase;
+      font-size: 13px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--muted);
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 0;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 0; white-space: nowrap;
       text-decoration: none;
       transition: color .15s;
     }
     .project-back-btn:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
-    .project-back-btn svg { width: 12px; height: 12px; }
+    .project-back-btn svg { width: 15px; height: 15px; }
     /* Article typography */
     .project-article {
-      max-width: 720px;
-      padding: 52px 64px 100px 0;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 52px 40px 100px 0;
     }
     .project-article-title {
       font-family: 'Lora', Georgia, serif;
