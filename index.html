@@ -821,6 +821,7 @@
     .project-desc { font-size: 14px; color: var(--body); line-height: 1.65; }
     .project-stats { display: flex; gap: 16px; flex-wrap: wrap; }
     .stat-pill {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
       font-size: 12px;
       font-weight: 600;
       color: var(--rausch);
@@ -830,6 +831,7 @@
     }
     .project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
     .tech-tag {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
       font-size: 11px;
       font-weight: 500;
       padding: 4px 10px;
@@ -870,24 +872,20 @@
       position: sticky;
       top: 0;
       background: var(--canvas);
-      border-bottom: 1px solid var(--hairline);
-      padding: 14px 64px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
+      padding: 28px 64px 0;
       z-index: 10;
     }
     .project-back-btn {
       background: none; border: none; cursor: pointer;
       font-family: 'Inter', sans-serif;
-      font-size: 14px; font-weight: 500;
+      font-size: 13px; font-weight: 500;
       color: var(--muted);
-      display: flex; align-items: center; gap: 6px;
-      padding: 6px 0;
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 0;
       transition: color .15s;
     }
     .project-back-btn:hover { color: var(--ink); }
-    .project-back-btn svg { width: 16px; height: 16px; }
+    .project-back-btn svg { width: 15px; height: 15px; }
     /* Article typography */
     .project-article {
       max-width: 720px;
@@ -967,24 +965,24 @@
     /* card click affordance */
     .project-card { cursor: pointer; }
     .project-read-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 13px; font-weight: 600;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 14px; font-weight: 400;
       color: var(--ink); margin-top: auto;
-      padding: 8px 14px;
-      border: 1.5px solid var(--hairline);
-      border-radius: var(--r-full);
+      padding: 0; border: none;
       background: none; cursor: pointer;
       width: fit-content;
-      transition: border-color .15s, background .15s;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: opacity .15s;
     }
-    .project-read-btn:hover { border-color: var(--ink); background: var(--soft); }
+    .project-read-btn:hover { opacity: .6; }
     @media (max-width: 900px) {
-      .project-overlay-nav { padding: 14px 24px; }
-      .project-article { padding: 36px 24px 80px; }
+      .project-overlay-nav { padding: 24px 24px 0; }
+      .project-article { padding: 20px 24px 80px; }
       .project-article-title { font-size: 26px; }
     }
     @media (max-width: 600px) {
-      .project-overlay-nav { padding: 12px 20px; }
+      .project-overlay-nav { padding: 20px 20px 0; }
       .project-article { padding: 28px 20px 60px; }
       .project-article-title { font-size: 22px; }
       .project-article h2 { font-size: 18px; }
@@ -2813,7 +2811,7 @@ def ciou_cost(detections, tracks):
 };
 
 /* ── Overlay open / close ─────────────────────────────────────── */
-function openProject(id) {
+function openProject(id, pushState = true) {
   const data = projectData[id];
   if (!data) return;
 
@@ -2823,7 +2821,6 @@ function openProject(id) {
   content.innerHTML = `
     <p class="project-article-meta">${data.meta}</p>
     <h1 class="project-article-title">${data.title}</h1>
-    <hr>
     ${data.content}
   `;
 
@@ -2831,7 +2828,10 @@ function openProject(id) {
   overlay.scrollTop = 0;
   document.body.style.overflow = 'hidden';
 
-  // syntax highlighting
+  // Push history state so browser back button works
+  if (pushState) history.pushState({ project: id }, '', '');
+
+  // Syntax highlighting
   overlay.querySelectorAll('pre code').forEach(block => {
     hljs.highlightElement(block);
   });
@@ -2854,9 +2854,21 @@ function closeProject() {
   document.body.style.overflow = '';
 }
 
+// Browser back button closes overlay
+window.addEventListener('popstate', () => closeProject());
+
 // Close on Escape
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeProject();
+  if (e.key === 'Escape') {
+    if (document.getElementById('project-overlay').classList.contains('open')) {
+      history.back();
+    }
+  }
+});
+
+// Prevent card div double-firing when clicking read-more button
+document.querySelectorAll('.project-read-btn').forEach(btn => {
+  btn.addEventListener('click', e => e.stopPropagation());
 });
 </script>
 </body>
