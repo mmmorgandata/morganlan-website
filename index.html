@@ -6,7 +6,7 @@
   <title>Morgan Lan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@300;400;600;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     /* ── Design tokens ─────────────────────────────────────────── */
     :root {
@@ -736,18 +736,18 @@
     }
 
     /* ── Newsletter Journey ─────────────────────────────────────── */
-    .journey-feed { max-width: 680px; margin: 0 auto; }
-    .journey-entry { padding: 48px 0; border-top: 1px solid var(--hairline); }
-    .journey-entry:first-child { border-top: none; padding-top: 0; }
+    .journey-feed { max-width: 780px; margin: 0 auto; }
+    .journey-entry { padding: 48px 0; }
+    .journey-entry:first-child { padding-top: 0; }
     .journey-entry-meta {
       font-size: 12px; font-weight: 600;
       letter-spacing: 0.1em; text-transform: uppercase;
       color: var(--muted); margin-bottom: 6px;
     }
     .journey-entry-title {
-      font-family: 'Courier Prime', monospace;
+      font-family: 'Lora', Georgia, serif;
       font-size: 22px; font-weight: 700;
-      color: var(--ink); letter-spacing: -0.3px;
+      color: var(--ink); letter-spacing: -0.2px;
       margin-bottom: 20px;
     }
     .journey-prose {
@@ -762,18 +762,14 @@
     }
     .journey-stats {
       display: flex; margin: 28px 0;
-      border: 1px solid var(--hairline);
-      border-radius: var(--r-md); overflow: hidden;
     }
     .journey-stat {
       flex: 1; padding: 20px 16px; text-align: center;
-      border-right: 1px solid var(--hairline);
       display: flex; flex-direction: column; gap: 6px;
     }
-    .journey-stat:last-child { border-right: none; }
     .journey-stat-num {
       font-size: 30px; font-weight: 700;
-      color: var(--rausch); letter-spacing: -1px; line-height: 1;
+      color: var(--ink); letter-spacing: -1px; line-height: 1;
     }
     .journey-stat-label {
       font-size: 10px; font-weight: 600;
