@@ -2762,11 +2762,12 @@ const projectData = {
 
   yolo: {
     title: 'Real-Time Traffic Perception System',
-    meta: 'Undergrad capstone · Advised by Prof. Pengpeng Xu · 2024',
+    meta: 'Industry-partnered undergrad capstone · 2024',
     content: `
       <h2>Overview</h2>
       <p>This project built an end-to-end perception pipeline for dashcam traffic video — combining object detection, multi-object tracking, and monocular distance estimation into a unified real-time system that can issue rear-end collision warnings.</p>
       <p>The core challenge was the accuracy-latency tradeoff for edge deployment: standard YOLOv8 is accurate but too heavy for real-time inference on embedded hardware. The goal was to close that gap through targeted architectural improvements without sacrificing detection quality on traffic-specific scenes.</p>
+      <p>This project was conducted under the supervision of <a href="https://scholar.google.com/citations?user=Xu_Pengpeng" target="_blank" style="color:var(--rausch)">Prof. Pengpeng Xu</a> (Central South University), whose research spans road safety, intelligent transportation systems, and computer vision. The system was trained and evaluated on a real-world dashcam dataset collected from highway freight vehicles in Guizhou, China.</p>
 
       <h2>Detection: Improved YOLOv8</h2>
       <p>Three modifications were applied to the standard YOLOv8 backbone and neck:</p>
@@ -2895,7 +2896,7 @@ policy = Q.argmin(axis=0)  # optimal action per state</code></pre>
 
   agv: {
     title: 'AGV Scheduling for Smart Warehouse',
-    meta: '2024 · Guangzhou',
+    meta: 'University-industry collaboration · 2024 · Guangzhou',
     content: `
       <h2>Overview</h2>
       <p>Modern smart warehouses deploy fleets of AGVs (Automated Guided Vehicles) to replace manual labor in cargo retrieval. Each AGV must travel to a target shelf, carry goods to an unloading dock, and return to its charging station — all while coordinating with 13 other agents to avoid conflicts.</p>
