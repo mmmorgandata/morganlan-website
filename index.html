@@ -2781,34 +2781,34 @@ const projectData = {
     meta: 'Industry-partnered undergrad capstone · 2024',
     content: `
       <h2>Overview</h2>
-      <p>This project built an end-to-end perception pipeline for dashcam traffic video — combining object detection, multi-object tracking, and monocular distance estimation into a unified real-time system that can issue rear-end collision warnings.</p>
-      <p>The core challenge was the accuracy-latency tradeoff for edge deployment: standard YOLOv8 is accurate but too heavy for real-time inference on embedded hardware. The goal was to close that gap through targeted architectural improvements without sacrificing detection quality on traffic-specific scenes.</p>
+      <p>This project built an end-to-end traffic perception pipeline for dashcam video — combining vehicle detection, multi-object tracking, monocular distance and speed estimation, and real-time collision warning into a unified system deployable on embedded hardware.</p>
+      <p>The central challenge was the accuracy-latency tradeoff: standard YOLOv5 is accurate but parameter-heavy for edge deployment. The goal was to substantially reduce parameter count and improve throughput without sacrificing detection quality on highway traffic scenes — then layer on tracking and geometric estimation to produce actionable safety warnings.</p>
       <p>This project was conducted under the supervision of <a href="https://scholar.google.com/citations?user=P2n-dZEAAAAJ" target="_blank" style="color:var(--rausch)">Prof. Pengpeng Xu</a>, whose research spans intelligent transportation systems, deep learning, and computer vision. The system was trained and evaluated on a real-world dashcam dataset collected from highway freight vehicles in Guizhou, China.</p>
 
-      <h2>Detection: Improved YOLOv8</h2>
-      <p>Three modifications were applied to the standard YOLOv8 backbone and neck:</p>
+      <h2>Detection: Improved YOLOv5</h2>
+      <p>Three targeted modifications were applied to the YOLOv5s backbone and neck:</p>
 
-      <h3>GSConv + SlimNeck</h3>
-      <p>Replaced the standard convolutional layers in the neck with <code>GSConv</code> (Group Shuffle Convolution) and adopted the SlimNeck architecture to reduce feature aggregation cost. This cuts parameter count in the neck while preserving multi-scale feature representation.</p>
+      <h3>GSConv + VoVGSCSP SlimNeck</h3>
+      <p>Standard convolutional layers in the neck were replaced with <code>GSConv</code> (Group-Shuffle Convolution) blocks assembled into a <code>VoVGSCSP</code> (Variety of View Group-Shuffle Cross-Stage Partial) module — the SlimNeck architecture. This restructuring preserves multi-scale feature aggregation while dramatically reducing redundant computation in the neck, cutting the final parameter count nearly in half.</p>
 
       <h3>SimAM Attention</h3>
-      <p><code>SimAM</code> is a parameter-free attention module that infers 3D attention weights for each neuron based on a fast closed-form solution — no additional parameters, minimal compute overhead, meaningful signal boost in dense traffic scenes.</p>
+      <p><code>SimAM</code> is a parameter-free attention module that infers 3D neuron-wise attention weights via a fast closed-form energy minimization — no additional learnable parameters, negligible compute overhead, and meaningful saliency boost in dense multi-vehicle scenes.</p>
 
-      <h3>Wise-IoU Loss</h3>
-      <p>Standard IoU-based losses treat all training samples equally. <code>Wise-IoU</code> introduces a dynamic focusing factor that down-weights geometric outliers and focuses training on ordinarily difficult examples — leading to more stable convergence and better localization on small or partially occluded vehicles.</p>
+      <h3>Wise-IoU v3 Loss</h3>
+      <p>Standard IoU losses treat all training samples equally. <code>Wise-IoU v3</code> introduces a dynamic focusing factor that down-weights geometric outliers and concentrates gradient signal on ordinarily-difficult examples, producing more stable convergence and sharper localization on small or partially-occluded vehicles.</p>
 
-      <pre><code class="language-python"># Wise-IoU — dynamic focusing factor
+      <pre><code class="language-python"># Wise-IoU v3 — dynamic focusing factor (from utils/loss.py)
 def wise_iou_loss(pred, target, gamma=0.5):
     iou = compute_iou(pred, target)
-    beta = iou.detach()          # stop-gradient anchor
-    alpha = (1 - beta) ** gamma  # down-weight outliers
-    loss = alpha * (1 - iou)
+    beta = iou.detach()           # stop-gradient anchor
+    alpha = (1 - beta) ** gamma   # down-weight outliers
+    loss  = alpha * (1 - iou)
     return loss.mean()</code></pre>
 
       <h2>Tracking: Improved DeepSORT</h2>
-      <p>Standard DeepSORT uses IoU-based association between detections and existing tracks, which degrades when objects overlap or move quickly. This project replaces it with <code>CIoU</code>-based association, which accounts for center distance, aspect ratio, and overlap simultaneously — giving the tracker more geometric signal to work with.</p>
+      <p>Standard DeepSORT uses simple IoU overlap for matching detections to existing tracks, which degrades when vehicles overlap or move fast. This project upgrades the association stage to <code>CIoU</code> distance, which jointly encodes overlap area, center-point offset, and aspect-ratio consistency — giving the tracker richer geometric signal and reducing identity switches in congested traffic.</p>
 
-      <pre><code class="language-python"># CIoU association cost matrix (simplified)
+      <pre><code class="language-python"># CIoU association cost matrix (from deep_sort/)
 def ciou_cost(detections, tracks):
     cost = np.zeros((len(detections), len(tracks)))
     for i, det in enumerate(detections):
@@ -2816,20 +2816,47 @@ def ciou_cost(detections, tracks):
             cost[i, j] = 1 - ciou(det.bbox, trk.bbox)
     return cost</code></pre>
 
-      <h2>Monocular Distance Estimation</h2>
-      <p>With no depth sensor available, distance is estimated geometrically from the detected bounding box height and a calibrated camera model:</p>
-      <p>\\[ d = \\frac{f \\cdot H_{\\text{real}}}{h_{\\text{bbox}}} \\]</p>
-      <p>where \\(f\\) is focal length, \\(H_{\\text{real}}\\) is the known average vehicle height, and \\(h_{\\text{bbox}}\\) is the detected bounding box height in pixels. A warning is triggered when estimated distance falls below a safety threshold.</p>
+      <h2>Distance, Speed & Collision Warning</h2>
+      <p>With no depth sensor, distance is recovered from the pinhole-camera model using the tracked bounding box height:</p>
+      <p>\\[ d = \\frac{H_{\\text{real}} \\cdot f}{h_{\\text{bbox}}} \\]</p>
+      <p>where \\(H_{\\text{real}}\\) is the reference vehicle height, \\(f\\) is the calibrated focal length, and \\(h_{\\text{bbox}}\\) is the bounding-box height in pixels. Relative speed is derived from frame-to-frame bounding-box displacement:</p>
+      <p>\\[ v = \\frac{\\Delta p \\cdot W_{\\text{real}}}{w_{\\text{bbox}}} \\cdot \\frac{f_{\\text{fps}}}{\\Delta t_{\\text{frames}}} \\cdot k_{\\text{persp}} \\times 3.6 \\]</p>
+      <p>Time-to-collision is then:</p>
+      <p>\\[ \\text{TTC} = \\frac{d}{v_{\\text{closing}}} \\]</p>
+      <p>The warning overlay uses a three-level colour scheme: <strong style="color:#22c55e">green</strong> (safe), <strong style="color:#f59e0b">yellow</strong> (TTC &lt; 3 s), <strong style="color:#ef4444">red</strong> (TTC ≤ 1.5 s).</p>
 
-      <h2>Evaluation</h2>
-      <p>The system was evaluated on three metrics across the detection and tracking stages:</p>
-      <ul>
-        <li><strong>mAP</strong> — mean Average Precision for detection quality</li>
-        <li><strong>MOTA</strong> (Multi-Object Tracking Accuracy) — combined measure of missed detections, false positives, and identity switches</li>
-        <li><strong>MOTP</strong> (Multi-Object Tracking Precision) — average localization precision of matched tracks</li>
-      </ul>
-      <!-- 替换为实验结果图 -->
-      <!-- <figure><img src="images/yolo-results.jpg" alt="Evaluation results" /><figcaption>Detection and tracking metrics vs. baseline YOLOv8</figcaption></figure> -->
+      <h2>Results</h2>
+      <h3>Detection</h3>
+      <table class="article-table">
+        <thead>
+          <tr><th>Model</th><th>Precision</th><th>Recall</th><th>mAP</th><th>FPS</th><th>Params (M)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>YOLOv5 reference</td><td>92.5%</td><td>91.2%</td><td>96.3%</td><td>34.1</td><td>21.9</td></tr>
+          <tr><td>YOLOv7 reference</td><td>93.2%</td><td>92.4%</td><td>95.2%</td><td>45.8</td><td>37.4</td></tr>
+          <tr><td>YOLOv5 baseline</td><td>95.4%</td><td>95.2%</td><td>95.8%</td><td>46.2</td><td>32.6</td></tr>
+          <tr><td><strong>Improved YOLOv5</strong></td><td><strong>96.9%</strong></td><td><strong>96.3%</strong></td><td><strong>97.5%</strong></td><td><strong>48.2</strong></td><td><strong>17.2</strong></td></tr>
+        </tbody>
+      </table>
+      <p>The improved model raises mAP by 1.7 pp over the baseline while cutting parameters from 32.6 M to 17.2 M — a <strong>47% reduction</strong> — and improving throughput by 2 FPS.</p>
+
+      <figure>
+        <img src="https://raw.githubusercontent.com/mmmorgandata/real-time-traffic-perception/main/results/assets/improved_yolov5_training_curves.png" alt="Training and validation curves for improved YOLOv5" />
+        <figcaption>Training and validation dynamics — localization loss, objectness loss, classification loss, precision, recall, mAP@0.5, and mAP@0.5:0.95</figcaption>
+      </figure>
+
+      <h3>Tracking</h3>
+      <table class="article-table">
+        <thead>
+          <tr><th>Pipeline</th><th>ID Errors</th><th>Missed</th><th>MOTA</th><th>MOTP</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Improved YOLOv5 + DeepSORT</td><td>18</td><td>43</td><td>91.43%</td><td>91.34%</td></tr>
+          <tr><td><strong>+ Improved DeepSORT (CIoU)</strong></td><td><strong>11</strong></td><td><strong>29</strong></td><td><strong>93.64%</strong></td><td><strong>94.68%</strong></td></tr>
+        </tbody>
+      </table>
+      <p>Replacing IoU association with CIoU reduced identity errors by 39% and missed detections by 33%.</p>
+
       <p>GitHub: <a href="https://github.com/mmmorgandata/real-time-traffic-perception" target="_blank" style="color:var(--rausch)">real-time-traffic-perception →</a></p>
     `
   },
