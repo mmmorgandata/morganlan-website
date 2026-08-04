@@ -1012,17 +1012,29 @@
     }
     .project-read-btn:hover { text-decoration: underline; text-underline-offset: 3px; opacity: .7; }
     @media (max-width: 900px) {
-      .project-overlay-layout { grid-template-columns: 1fr; }
-      .project-sidebar { position: static; height: auto; padding: 32px 24px 0; }
-      .project-article { padding: 24px 24px 80px 24px; }
+      .project-overlay-layout { display: block; }
+      .project-sidebar {
+        position: static; height: auto;
+        align-items: flex-start;
+        padding: 28px 24px 0;
+      }
+      .project-back-btn { font-size: 12px; }
+      .project-article { grid-column: auto; padding: 20px 24px 80px; }
       .project-article-title { font-size: 26px; }
+      .article-table { font-size: 14px; }
+      .article-table th, .article-table td { padding: 8px 12px 8px 0; }
+      .project-demo iframe { height: 420px; }
     }
     @media (max-width: 600px) {
       .project-sidebar { padding: 24px 20px 0; }
-      .project-article { padding: 20px 20px 60px 20px; }
-      .project-article-title { font-size: 22px; }
-      .project-article h2 { font-size: 18px; }
-      .project-article p, .project-article li { font-size: 15px; }
+      .project-article { padding: 16px 20px 60px; }
+      .project-article-title { font-size: 20px; }
+      .project-article h2 { font-size: 17px; }
+      .project-article h3 { font-size: 15px; }
+      .project-article p, .project-article li { font-size: 15px; line-height: 1.7; }
+      .project-article pre { font-size: 12px; padding: 14px 16px; overflow-x: auto; }
+      .article-table { display: block; overflow-x: auto; white-space: nowrap; }
+      .project-demo iframe { height: 320px; }
     }
 
     /* ── 4. Side Works ─────────────────────────────────────────── */
