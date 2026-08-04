@@ -2889,6 +2889,7 @@ policy = Q.argmin(axis=0)  # optimal action per state</code></pre>
 
       <h3>The Optimal Policy Is Not Monotone</h3>
       <p>We expected the optimal policy to prescribe longer intervals as memory strengthens, and shorter intervals for harder items. The optimal policy has <strong>26 violations</strong> in the half-life direction and <strong>25</strong> in the difficulty direction. The cause is the \\((1-p)^{0.97}\\) gain term: the policy sometimes deliberately waits longer — letting recall probability drop further — because the resulting memory boost more than compensates for the higher forgetting risk. Simple heuristics miss this non-monotonicity entirely, which explains why the threshold policies still leave a small gap.</p>
+      <p>GitHub: <a href="https://github.com/mmmorgandata/optimal-flashcard-scheduler" target="_blank" style="color:var(--rausch)">optimal-flashcard-scheduler →</a></p>
     `
   },
 
@@ -2962,6 +2963,7 @@ def consensus_round(agents):
       <div class="project-demo">
         <iframe src="https://mmmorgandata.github.io/agv-warehouse-scheduling/" title="AGV Warehouse Scheduling Dashboard" loading="lazy" allowfullscreen></iframe>
       </div>
+      <p>GitHub: <a href="https://github.com/mmmorgandata/agv-warehouse-scheduling" target="_blank" style="color:var(--rausch)">agv-warehouse-scheduling →</a></p>
     `
   },
 
