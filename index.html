@@ -970,6 +970,36 @@
       border: none; border-top: 1px solid var(--hairline);
       margin: 40px 0;
     }
+    /* Article data tables */
+    .article-table {
+      width: 100%; border-collapse: collapse;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 15px; color: var(--ink);
+      margin: 24px 0;
+    }
+    .article-table th {
+      font-family: 'Courier Prime', 'Courier New', monospace;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--muted); text-align: left;
+      padding: 8px 16px 8px 0; border-bottom: 1px solid var(--hairline);
+    }
+    .article-table td {
+      padding: 10px 16px 10px 0; vertical-align: top;
+      border-bottom: 1px solid var(--hairline);
+      line-height: 1.5;
+    }
+    .article-table tbody tr:last-child td { border-bottom: none; }
+    /* Demo iframe wrapper */
+    .project-demo {
+      margin: 28px 0; border-radius: var(--r-md);
+      overflow: hidden; border: 1px solid var(--hairline);
+      background: #fff;
+    }
+    .project-demo iframe {
+      display: block; width: 100%; height: 560px;
+      border: none;
+    }
     .project-read-btn {
       font-family: Georgia, 'Times New Roman', serif;
       font-size: 14px; font-weight: 400;
@@ -2787,23 +2817,151 @@ def ciou_cost(detections, tracks):
   },
 
   mdp: {
-    title: 'Adaptive Scheduling via Stochastic MDP',
-    meta: 'Python · Mar – Jun 2026 · Seattle',
+    title: 'Optimal Flashcard Scheduling via MDP',
+    meta: 'IND E 517 · UW · 2025',
     content: `
       <h2>Overview</h2>
-      <p>This project formulated vocabulary review scheduling as a Stochastic Shortest-Path MDP and derived optimal and near-optimal policies calibrated on 220 million real learning interactions from a language learning platform.</p>
-      <p>Full write-up coming soon.</p>
-      <p>GitHub: <a href="https://github.com/mmmorgandata/optimal-flashcard-scheduler" target="_blank" style="color:var(--rausch)">optimal-flashcard-scheduler →</a></p>
+      <p>When learning vocabulary, <em>when</em> you review matters as much as <em>what</em> you review. The forgetting curve shows that memory decays exponentially over time — but well-timed reviews can compound memory growth session by session. This project asks: what is the mathematically optimal review schedule, and how much do you lose by simplifying it into a one-sentence rule a human can actually follow?</p>
+      <p>The answer: almost nothing. A simple threshold policy — "review when your recall probability drops to ~85%" — recovers <strong>97% of the benefit</strong> of full MDP optimization. This project was completed for IND E 517 (Markov Decision Processes) at UW, co-authored with Sanjida Nasreen, and grounded in memory model parameters fitted from 220 million real learning interactions on the MaiMemo platform.</p>
+
+      <h2>Memory Model</h2>
+      <p>Memory strength is tracked by <strong>half-life</strong> \\(h\\): the number of days until recall probability drops to 50%. After waiting \\(a\\) days, recall probability follows the Ebbinghaus forgetting curve:</p>
+      <p>\\[ P(\\text{recall}) = 2^{-a/h} \\]</p>
+
+      <h3>How Half-Life Evolves</h3>
+      <p>The DHP memory model (parameters fitted from real user data) specifies how half-life changes after each review:</p>
+      <p><strong>Recall</strong> (probability \\(p\\)):</p>
+      <p>\\[ h' = h \\cdot \\left(1 + e^{3.81} \\cdot d^{-0.534} \\cdot h^{-0.127} \\cdot (1-p)^{0.97}\\right) \\]</p>
+      <p><strong>Forget</strong> (probability \\(1-p\\)), difficulty also increases:</p>
+      <p>\\[ h' = e^{-0.041} \\cdot d^{-0.041} \\cdot h^{0.377} \\cdot (1-p)^{-0.227} \\]</p>
+      <p>The \\((1-p)^{0.97}\\) term in the recall branch is the key insight: a barely-remembered item gets a <em>bigger</em> memory boost than an easily-recalled one — the "desirable difficulty" effect. This directly shapes the optimal policy: waiting a bit longer (letting recall probability drop) can be worth the forgetting risk because the memory payoff is larger.</p>
+
+      <h2>MDP Formulation</h2>
+      <p>State \\(s = (h_{\\text{bin}},\\ d)\\): half-life binned into 19 log-spaced values × 5 difficulty levels = 96 states, plus one terminal state \\(s^*\\) (mastery: \\(h \\geq 360\\) days). Action \\(a \\in \\{1, 2, 3, 5, 7, 10, 14, 21, 30, 45, 60\\}\\) days — how long to wait before the next review.</p>
+      <p>Half-life bins are log-spaced because relative changes matter: going from 1→2 days is a huge leap, while 300→310 days is negligible. The cost function reflects a 3:1 effort ratio — forgetting costs three times as much as a successful recall (relearning requires re-presenting the item, processing the error, and restarting the strengthening process):</p>
+      <p>\\[ c(s, a) = p \\cdot 3 + (1 - p) \\cdot 9 \\]</p>
+      <p>The Bellman optimality equation:</p>
+      <p>\\[ V(s) = \\min_{a \\in A} \\left[ c(s,a) + \\gamma \\sum_{s'} P(s' \\mid s, a)\\, V(s') \\right], \\quad V(s^*) = 0, \\quad \\gamma = 0.99 \\]</p>
+
+      <h2>Value Iteration</h2>
+      <p>Transition matrices \\(P\\) (shape \\(11 \\times 96 \\times 96\\)) and cost matrix \\(C\\) (shape \\(11 \\times 96\\)) were precomputed and vectorized with NumPy <code>einsum</code>. Value iteration converged in <strong>76 iterations</strong> (Bellman error \\(< 10^{-6}\\)) in under one second.</p>
+
+      <pre><code class="language-python"># Value iteration core loop (simplified from value_iteration.py)
+V = np.zeros(N_STATES)
+for _ in range(MAX_ITER):
+    # Q[a, s] = cost of taking action a in state s + discounted future value
+    Q = C + gamma * np.einsum('asb,b->as', P, V)
+    V_new = Q.min(axis=0)
+    if np.max(np.abs(V_new - V)) < 1e-6:
+        break
+    V = V_new
+policy = Q.argmin(axis=0)  # optimal action per state</code></pre>
+
+      <h2>Interpretable Policies</h2>
+      <p>The optimal policy is a lookup table — not something anyone can memorize. The central question: can a simple human-readable rule match it? Four families of policies were tested against the MDP optimum:</p>
+      <ul>
+        <li><strong>Recall threshold</strong> — "Review when \\(P(\\text{recall})\\) drops to \\(p^*\\)." Wait time: \\(a = -h \\cdot \\log_2(p^*)\\). Stronger memory automatically implies longer waits.</li>
+        <li><strong>Difficulty-aware threshold</strong> — Same as above, but harder items use a tighter target \\(p^*\\).</li>
+        <li><strong>Fixed interval</strong> — "Review every \\(k\\) days regardless of memory state."</li>
+        <li><strong>Tiered rules</strong> — Piecewise fixed intervals keyed on half-life buckets (5 tiers).</li>
+      </ul>
+
+      <h2>Results</h2>
+      <p>500 independent Monte Carlo episodes per difficulty level (2,500 total per policy), simulating stochastic recall/forget outcomes until mastery (\\(h \\geq 360\\) days) or 2,000 days elapsed:</p>
+
+      <table class="article-table">
+        <thead><tr><th>Policy</th><th>Avg Cost</th><th>Reviews</th><th>Mastery</th><th>Δ vs Optimal</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Optimal (VI)</strong></td><td><strong>35.1</strong></td><td>8.7</td><td>100%</td><td>—</td></tr>
+          <tr><td>Difficulty-Aware</td><td>36.0</td><td>8.9</td><td>100%</td><td>+2.7%</td></tr>
+          <tr><td>Threshold p*=0.9</td><td>36.9</td><td>9.4</td><td>100%</td><td>+5.3%</td></tr>
+          <tr><td>Threshold p*=0.8</td><td>37.1</td><td>8.4</td><td>100%</td><td>+5.8%</td></tr>
+          <tr><td>Threshold p*=0.7</td><td>41.0</td><td>8.4</td><td>100%</td><td>+17.0%</td></tr>
+          <tr><td>Tiered Rules</td><td>45.0</td><td>9.1</td><td>100%</td><td>+28.4%</td></tr>
+          <tr><td>Fixed 3-day</td><td>136.2</td><td>28.9</td><td>100%</td><td>+289%</td></tr>
+          <tr><td>Fixed 7-day</td><td>1,783</td><td>201</td><td>44%</td><td>+4,987%</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Price of Interpretability</h3>
+      <p>\\[ \\Delta(\\pi) = \\frac{V^\\pi - V^*}{V^*} \\]</p>
+      <p>The difficulty-aware threshold costs only <strong>+2.7% more</strong> than the full MDP-optimal policy — a one-sentence rule recovers <strong>97% of the optimization benefit</strong>. Fixed-interval scheduling fails categorically: the 7-day policy achieves only 44% mastery because items with weak memory forget on nearly every review and never accumulate enough half-life to reach mastery.</p>
+
+      <h3>The Optimal Policy Is Not Monotone</h3>
+      <p>We expected the optimal policy to prescribe longer intervals as memory strengthens, and shorter intervals for harder items. The optimal policy has <strong>26 violations</strong> in the half-life direction and <strong>25</strong> in the difficulty direction. The cause is the \\((1-p)^{0.97}\\) gain term: the policy sometimes deliberately waits longer — letting recall probability drop further — because the resulting memory boost more than compensates for the higher forgetting risk. Simple heuristics miss this non-monotonicity entirely, which explains why the threshold policies still leave a small gap.</p>
     `
   },
 
   agv: {
-    title: 'AGV Scheduling for Cloud Warehouse',
+    title: 'AGV Scheduling for Smart Warehouse',
     meta: 'Python · 2024 · Guangzhou',
     content: `
       <h2>Overview</h2>
-      <p>A two-phase intelligent scheduling framework for Autonomous Ground Vehicle (AGV) task allocation in a cloud warehouse environment.</p>
-      <p>Full write-up coming soon.</p>
+      <p>Modern smart warehouses deploy fleets of AGVs (Automated Guided Vehicles) to replace manual labor in cargo retrieval. Each AGV must travel to a target shelf, carry goods to an unloading dock, and return to its charging station — all while coordinating with 13 other agents to avoid conflicts.</p>
+      <p>This project solves the resulting multi-agent scheduling problem in two decoupled stages: <strong>CBBA</strong> (Consensus-Based Bundle Algorithm) handles task assignment — deciding which AGV takes which job — then <strong>JPS</strong> (Jump Point Search) plans each agent's collision-free path through the warehouse grid.</p>
+
+      <h2>Stage 1 — Task Assignment with CBBA</h2>
+      <p>CBBA is a distributed auction algorithm. Each AGV independently bids on tasks and resolves conflicts through peer-to-peer communication, converging on a conflict-free assignment without any central controller. The key design choice: no single point of failure, and the algorithm scales gracefully as fleet size grows.</p>
+
+      <h3>Bid Score</h3>
+      <p>When AGV \\(i\\) bids on task \\(j\\), its score balances task value against travel cost:</p>
+      <p>\\[ \\text{score}_{ij} = v_j \\cdot e^{-\\lambda \\cdot d_{ij}} - \\mu \\cdot d_{ij} \\]</p>
+      <p>where \\(v_j\\) is task value (based on cargo type and priority), \\(d_{ij}\\) is the travel distance from agent \\(i\\) to task \\(j\\), \\(\\lambda\\) is a spatial discount factor, and \\(\\mu\\) is a battery cost coefficient. Each AGV greedily extends its task bundle by inserting the highest-marginal-value unassigned task at its optimal sequence position — stopping when the bundle is full or no profitable task remains.</p>
+
+      <h3>Consensus Round</h3>
+      <p>After each bidding round, agents share their bids peer-to-peer. The globally highest bidder wins each task; losing agents release their claim and re-bid on remaining tasks. The algorithm converges when no agent changes its bundle — typically within a few rounds.</p>
+
+      <pre><code class="language-python"># Core bid computation (simplified from cbba.py)
+def compute_bid(agent, task):
+    dist = euclidean(agent.pos, task.pos) + euclidean(task.pos, agent.dock)
+    value = task.reward * math.exp(-LAMBDA * dist) - MU * dist
+    return value if agent.can_accept(task) else -math.inf
+
+def consensus_round(agents):
+    for agent in agents:
+        for other in agents:
+            agent.update_from_peer(other.bids)  # merge highest bids
+    for agent in agents:
+        agent.release_lost_tasks()              # drop tasks won by higher bidder
+        agent.rebid()                           # re-bid on released tasks</code></pre>
+
+      <h2>Stage 2 — Path Planning with JPS</h2>
+      <p>Once tasks are assigned, each AGV needs an obstacle-free route through the warehouse grid. A* is optimal but slow at scale. Jump Point Search extends A* with two pruning rules that dramatically reduce node expansions on uniform-cost grids:</p>
+      <ul>
+        <li><strong>Forced-neighbour pruning</strong> — eliminates successors reachable by a shorter path not passing through the current node</li>
+        <li><strong>Jump-point skipping</strong> — compresses long straight-line corridors into a single expansion step</li>
+      </ul>
+      <p>On the 3,000 × 3,000 m warehouse grid, the performance gap vs. A* is substantial:</p>
+
+      <table class="article-table">
+        <thead><tr><th>Algorithm</th><th>Memory</th><th>Runtime (single task)</th></tr></thead>
+        <tbody>
+          <tr><td>A*</td><td>13.24 GB</td><td>6,532 s</td></tr>
+          <tr><td><strong>JPS</strong></td><td><strong>6.42 GB</strong></td><td><strong>1,458 s</strong></td></tr>
+        </tbody>
+      </table>
+
+      <p>JPS runs <strong>4.5× faster</strong> and uses <strong>51% less memory</strong> while returning the same optimal path length.</p>
+
+      <h2>Simulation & Results</h2>
+      <p>The simulation uses a 3,000 × 3,000 m grid representing a real warehouse layout, with task pickup locations drawn from actual field survey polygon data. 14 AGVs serve 30 tasks (15 heavy, 15 light), each starting and ending at a charging station at the centroid of the charging zone.</p>
+      <p>CBBA assigned all 30 tasks to 8 of the 14 AGVs, consistent with load-balancing constraints. Final KPIs:</p>
+
+      <table class="article-table">
+        <tbody>
+          <tr><td>Total travel distance (f₁)</td><td>63,139 m</td></tr>
+          <tr><td>Total mission time (f₂)</td><td>64,414 s</td></tr>
+          <tr><td>Total task reward (f₃)</td><td>2,700 pts</td></tr>
+          <tr><td>Tasks assigned</td><td>30 / 30</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Live Dashboard</h2>
+      <p>The interactive dashboard below shows AGVs moving in real time across the warehouse map, a Gantt chart with Travel / Service / Return blocks, and the A* vs JPS algorithm comparison. Hover over any AGV for a tooltip; click a row in the fleet panel to highlight that agent's route.</p>
+
+      <div class="project-demo">
+        <iframe src="https://mmmorgandata.github.io/agv-warehouse-scheduling/" title="AGV Warehouse Scheduling Dashboard" loading="lazy" allowfullscreen></iframe>
+      </div>
     `
   },
 
