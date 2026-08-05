@@ -2882,54 +2882,122 @@ def ciou_cost(detections, tracks):
     meta: 'Graduate capstone · UW · 2025',
     content: `
       <h2>Overview</h2>
-      <p>When learning vocabulary, <em>when</em> you review matters as much as <em>what</em> you review. The forgetting curve shows that memory decays exponentially over time — but well-timed reviews can compound memory growth session by session. This project asks: what is the mathematically optimal review schedule, and how much do you lose by simplifying it into a one-sentence rule a human can actually follow?</p>
-      <p>The answer: almost nothing. A simple threshold policy — "review when your recall probability drops to ~85%" — recovers <strong>97% of the benefit</strong> of full MDP optimization. This project was completed for IND E 517 (Markov Decision Processes) at UW, co-authored with Sanjida Nasreen, and grounded in memory model parameters fitted from 220 million real learning interactions on the MaiMemo platform.</p>
+      <p>When learning vocabulary, <em>when</em> you review matters as much as <em>what</em> you review. The forgetting curve shows that memory decays exponentially over time — but well-timed reviews compound memory growth session by session. This project asks: what is the mathematically optimal review schedule, and how much do you lose by simplifying it into a one-sentence rule a human can follow?</p>
+      <p>The answer: almost nothing. A simple threshold policy — "review when recall probability drops to ~85%" — recovers <strong>97% of the benefit</strong> of full MDP optimization. This project was completed for IND E 517 (Markov Decision Processes) at UW, co-authored with Sanjida Nasreen, and grounded in DHP model parameters fitted from 220 million real learning interactions on the MaiMemo platform.</p>
 
       <h2>Memory Model</h2>
-      <p>Memory strength is tracked by <strong>half-life</strong> \\(h\\): the number of days until recall probability drops to 50%. After waiting \\(a\\) days, recall probability follows the Ebbinghaus forgetting curve:</p>
+      <p>Memory strength is tracked by <strong>half-life</strong> \\(h\\): the number of days until recall probability drops to 50%. After waiting \\(a\\) days (from <code>memory_model.py</code>):</p>
       <p>\\[ P(\\text{recall}) = 2^{-a/h} \\]</p>
 
+      <pre><code class="language-python"># memory_model.py — Ebbinghaus forgetting curve
+def recall_probability(halflife: float, elapsed_days: float) -> float:
+    return 2.0 ** (-elapsed_days / halflife)</code></pre>
+
       <h3>How Half-Life Evolves</h3>
-      <p>The DHP memory model (parameters fitted from real user data) specifies how half-life changes after each review:</p>
-      <p><strong>Recall</strong> (probability \\(p\\)):</p>
+      <p>The DHP model specifies how half-life updates after each review. Parameters are fitted from real user data — not assumed.</p>
+      <p><strong>Recall</strong> (probability \\(p\\)) — memory strengthens:</p>
       <p>\\[ h' = h \\cdot \\left(1 + e^{3.81} \\cdot d^{-0.534} \\cdot h^{-0.127} \\cdot (1-p)^{0.97}\\right) \\]</p>
-      <p><strong>Forget</strong> (probability \\(1-p\\)), difficulty also increases:</p>
+      <p><strong>Forget</strong> (probability \\(1-p\\)) — memory weakens, difficulty increases:</p>
       <p>\\[ h' = e^{-0.041} \\cdot d^{-0.041} \\cdot h^{0.377} \\cdot (1-p)^{-0.227} \\]</p>
-      <p>The \\((1-p)^{0.97}\\) term in the recall branch is the key insight: a barely-remembered item gets a <em>bigger</em> memory boost than an easily-recalled one — the "desirable difficulty" effect. This directly shapes the optimal policy: waiting a bit longer (letting recall probability drop) can be worth the forgetting risk because the memory payoff is larger.</p>
+
+      <pre><code class="language-python"># memory_model.py — DHP halflife updates
+def next_halflife_recall(difficulty, halflife, p_recall):
+    p_recall = np.clip(p_recall, 0.001, 0.999)
+    return halflife * (
+        1 + np.exp(3.81)
+        * (difficulty ** -0.534)
+        * (halflife   ** -0.127)
+        * ((1 - p_recall) ** 0.97)   # desirable-difficulty term
+    )
+
+def next_halflife_forget(difficulty, halflife, p_recall):
+    p_recall = np.clip(p_recall, 0.001, 0.999)
+    return (
+        np.exp(-0.041)
+        * (difficulty ** -0.041)
+        * (halflife   **  0.377)
+        * ((1 - p_recall) ** -0.227)
+    )</code></pre>
+
+      <p>The \\((1-p)^{0.97}\\) term is key: a barely-remembered item gets a <em>bigger</em> boost than an easily-recalled one — the "desirable difficulty" effect. Waiting longer is sometimes worth the forgetting risk.</p>
 
       <h2>MDP Formulation</h2>
-      <p>State \\(s = (h_{\\text{bin}},\\ d)\\): half-life binned into 19 log-spaced values × 5 difficulty levels = 96 states, plus one terminal state \\(s^*\\) (mastery: \\(h \\geq 360\\) days). Action \\(a \\in \\{1, 2, 3, 5, 7, 10, 14, 21, 30, 45, 60\\}\\) days — how long to wait before the next review.</p>
-      <p>Half-life bins are log-spaced because relative changes matter: going from 1→2 days is a huge leap, while 300→310 days is negligible. The cost function reflects a 3:1 effort ratio — forgetting costs three times as much as a successful recall (relearning requires re-presenting the item, processing the error, and restarting the strengthening process):</p>
+      <p>State \\(s = (h_{\\text{bin}},\\ d)\\): 19 log-spaced half-life bins × 5 difficulty levels = 96 states + 1 terminal (mastery: \\(h \\geq 360\\) days). Actions \\(a \\in \\{1,2,3,5,7,10,14,21,30,45,60\\}\\) days. Cost reflects a 3:1 forgetting penalty:</p>
       <p>\\[ c(s, a) = p \\cdot 3 + (1 - p) \\cdot 9 \\]</p>
-      <p>The Bellman optimality equation:</p>
-      <p>\\[ V(s) = \\min_{a \\in A} \\left[ c(s,a) + \\gamma \\sum_{s'} P(s' \\mid s, a)\\, V(s') \\right], \\quad V(s^*) = 0, \\quad \\gamma = 0.99 \\]</p>
+      <p>Bellman optimality equation (\\(\\gamma = 0.99\\)):</p>
+      <p>\\[ V(s) = \\min_{a \\in A} \\left[ c(s,a) + \\gamma \\sum_{s'} P(s' \\mid s, a)\\, V(s') \\right], \\quad V(s^*) = 0 \\]</p>
 
       <h2>Value Iteration</h2>
-      <p>Transition matrices \\(P\\) (shape \\(11 \\times 96 \\times 96\\)) and cost matrix \\(C\\) (shape \\(11 \\times 96\\)) were precomputed and vectorized with NumPy <code>einsum</code>. Value iteration converged in <strong>76 iterations</strong> (Bellman error \\(< 10^{-6}\\)) in under one second.</p>
+      <p>Transition matrix \\(P\\) (shape \\(11 \\times 96 \\times 96\\)) and cost matrix \\(C\\) (shape \\(11 \\times 96\\)) are precomputed; Bellman updates are vectorized with <code>einsum</code>. Converged in <strong>76 iterations</strong> (error \\(< 10^{-6}\\)) in under one second.</p>
 
-      <pre><code class="language-python"># Value iteration core loop (simplified from value_iteration.py)
-V = np.zeros(N_STATES)
-for _ in range(MAX_ITER):
-    # Q[a, s] = cost of taking action a in state s + discounted future value
-    Q = C + gamma * np.einsum('asb,b->as', P, V)
-    V_new = Q.min(axis=0)
-    if np.max(np.abs(V_new - V)) < 1e-6:
-        break
-    V = V_new
-policy = Q.argmin(axis=0)  # optimal action per state</code></pre>
+      <pre><code class="language-python"># value_iteration.py — core loop
+V      = np.zeros(N_STATES)
+policy = np.zeros(N_STATES, dtype=int)
+
+for iteration in range(max_iter):
+    V_old = V.copy()
+    # Q[a, s] = C(s,a) + γ * Σ_{s'} P(s'|s,a) * V(s')
+    Q      = C + gamma * np.einsum('asn,n->as', P, V)
+    V      = np.min(Q, axis=0)
+    policy = np.argmin(Q, axis=0)
+    V[TERMINAL_STATE] = 0.0
+
+    delta = np.max(np.abs(V - V_old))
+    if delta < tol:
+        break  # converged after 76 iterations</code></pre>
 
       <h2>Interpretable Policies</h2>
-      <p>The optimal policy is a lookup table — not something anyone can memorize. The central question: can a simple human-readable rule match it? Four families of policies were tested against the MDP optimum:</p>
-      <ul>
-        <li><strong>Recall threshold</strong> — "Review when \\(P(\\text{recall})\\) drops to \\(p^*\\)." Wait time: \\(a = -h \\cdot \\log_2(p^*)\\). Stronger memory automatically implies longer waits.</li>
-        <li><strong>Difficulty-aware threshold</strong> — Same as above, but harder items use a tighter target \\(p^*\\).</li>
-        <li><strong>Fixed interval</strong> — "Review every \\(k\\) days regardless of memory state."</li>
-        <li><strong>Tiered rules</strong> — Piecewise fixed intervals keyed on half-life buckets (5 tiers).</li>
-      </ul>
+      <p>The optimal policy is a 96-entry lookup table — not a rule anyone can remember. Four interpretable families were tested:</p>
+
+      <pre><code class="language-python"># threshold_policies.py — recall-threshold policy
+def halflife_threshold_policy(target_recall=0.9):
+    # "Wait until P(recall) drops to target_recall, then review."
+    # Interval: a = -h * log2(target_recall)
+    for h_bin in range(N_HALFLIFE_BINS):
+        for d_idx in range(N_DIFFICULTY):
+            h = HALFLIFE_BINS[h_bin]
+            t = max(1, -h * np.log2(target_recall))
+            policy[state_index(h_bin, d_idx)] = nearest_interval(t)
+
+def difficulty_aware_policy(base_recall=0.85):
+    # "Like threshold, but harder items use a tighter target."
+    for h_bin, d_idx in product(range(N_HALFLIFE_BINS), range(N_DIFFICULTY)):
+        h = HALFLIFE_BINS[h_bin]; d = DIFFICULTY_LEVELS[d_idx]
+        target = np.clip(base_recall + 0.01 * (10 - d), 0.5, 0.99)
+        t = max(1, -h * np.log2(target))
+        policy[state_index(h_bin, d_idx)] = nearest_interval(t)
+
+def tiered_policy():
+    # Piecewise: h<2d→1d, h<8d→3d, h<32d→7d, h<128d→14d, else→30d
+    for h_bin, d_idx in product(range(N_HALFLIFE_BINS), range(N_DIFFICULTY)):
+        h = HALFLIFE_BINS[h_bin]
+        t = 1 if h<2 else 3 if h<8 else 7 if h<32 else 14 if h<128 else 30
+        policy[state_index(h_bin, d_idx)] = nearest_interval(t)</code></pre>
+
+      <h2>Monte Carlo Simulation</h2>
+      <p>Each policy was evaluated with 500 independent episodes per difficulty level (2,500 total). Each episode simulates stochastic recall/forget outcomes until mastery (\\(h \\geq 360\\) days) or 2,000 days elapsed, tracking total cost, review count, and recall rate.</p>
+
+      <pre><code class="language-python"># simulator.py — single episode
+def simulate_episode(policy, difficulty=5, max_days=2000):
+    h, d_idx, day, total_cost = starting_halflife(difficulty), ..., 0, 0.0
+
+    while day < max_days and h < TARGET_HALFLIFE:
+        a_idx    = policy[state_index(halflife_to_bin(h), d_idx)]
+        interval = INTERVALS[a_idx]
+        day     += interval
+        p        = recall_probability(h, interval)
+
+        if np.random.random() < p:
+            total_cost += RECALL_COST          # +3
+            h = next_halflife_recall(d, h, p)
+        else:
+            total_cost += FORGET_COST          # +9
+            h = next_halflife_forget(d, h, p)
+            d_idx = min(d_idx + 1, N_DIFFICULTY - 1)
+
+    return {'total_cost': total_cost, 'mastered': h >= TARGET_HALFLIFE, ...}</code></pre>
 
       <h2>Results</h2>
-      <p>500 independent Monte Carlo episodes per difficulty level (2,500 total per policy), simulating stochastic recall/forget outcomes until mastery (\\(h \\geq 360\\) days) or 2,000 days elapsed:</p>
-
       <table class="article-table">
         <thead><tr><th>Policy</th><th>Avg Cost</th><th>Reviews</th><th>Mastery</th><th>Δ vs Optimal</th></tr></thead>
         <tbody>
@@ -2946,10 +3014,10 @@ policy = Q.argmin(axis=0)  # optimal action per state</code></pre>
 
       <h3>Price of Interpretability</h3>
       <p>\\[ \\Delta(\\pi) = \\frac{V^\\pi - V^*}{V^*} \\]</p>
-      <p>The difficulty-aware threshold costs only <strong>+2.7% more</strong> than the full MDP-optimal policy — a one-sentence rule recovers <strong>97% of the optimization benefit</strong>. Fixed-interval scheduling fails categorically: the 7-day policy achieves only 44% mastery because items with weak memory forget on nearly every review and never accumulate enough half-life to reach mastery.</p>
+      <p>The difficulty-aware threshold costs only <strong>+2.7% more</strong> than the full MDP solution — a one-sentence rule recovers <strong>97% of the optimization benefit</strong>. Fixed-interval scheduling fails categorically: Fixed 7-day achieves only 44% mastery because weak-memory items forget on nearly every review and never accumulate enough half-life to reach mastery.</p>
 
       <h3>The Optimal Policy Is Not Monotone</h3>
-      <p>We expected the optimal policy to prescribe longer intervals as memory strengthens, and shorter intervals for harder items. The optimal policy has <strong>26 violations</strong> in the half-life direction and <strong>25</strong> in the difficulty direction. The cause is the \\((1-p)^{0.97}\\) gain term: the policy sometimes deliberately waits longer — letting recall probability drop further — because the resulting memory boost more than compensates for the higher forgetting risk. Simple heuristics miss this non-monotonicity entirely, which explains why the threshold policies still leave a small gap.</p>
+      <p>We expected longer intervals as memory strengthens, and shorter intervals for harder items. The optimal policy has <strong>26 violations</strong> in the half-life direction and <strong>25</strong> in the difficulty direction. The cause is the \\((1-p)^{0.97}\\) gain term: the policy sometimes deliberately waits longer — letting recall drop further — because the resulting memory boost more than compensates for the forgetting risk. Simple heuristics miss this non-monotonicity entirely, which explains the residual 2.7% gap.</p>
       <p>GitHub: <a href="https://github.com/mmmorgandata/optimal-flashcard-scheduler" target="_blank" style="color:var(--rausch)">optimal-flashcard-scheduler →</a></p>
     `
   },
@@ -2959,41 +3027,89 @@ policy = Q.argmin(axis=0)  # optimal action per state</code></pre>
     meta: 'University-industry collaboration · 2024 · Guangzhou',
     content: `
       <h2>Overview</h2>
-      <p>Modern smart warehouses deploy fleets of AGVs (Automated Guided Vehicles) to replace manual labor in cargo retrieval. Each AGV must travel to a target shelf, carry goods to an unloading dock, and return to its charging station — all while coordinating with 13 other agents to avoid conflicts.</p>
+      <p>Modern smart warehouses deploy fleets of AGVs (Automated Guided Vehicles) to replace manual labor in cargo retrieval. Each AGV must travel to a target shelf, carry goods to an unloading dock, and return to its charging station — all while coordinating with 13 other agents to avoid route conflicts.</p>
       <p>This project solves the resulting multi-agent scheduling problem in two decoupled stages: <strong>CBBA</strong> (Consensus-Based Bundle Algorithm) handles task assignment — deciding which AGV takes which job — then <strong>JPS</strong> (Jump Point Search) plans each agent's collision-free path through the warehouse grid.</p>
 
       <h2>Stage 1 — Task Assignment with CBBA</h2>
-      <p>CBBA is a distributed auction algorithm. Each AGV independently bids on tasks and resolves conflicts through peer-to-peer communication, converging on a conflict-free assignment without any central controller. The key design choice: no single point of failure, and the algorithm scales gracefully as fleet size grows.</p>
+      <p>CBBA is a distributed auction algorithm: each AGV independently bids on tasks and resolves conflicts through peer-to-peer communication, converging on a conflict-free assignment without any central controller. No single point of failure; the algorithm scales gracefully as fleet size grows.</p>
 
       <h3>Bid Score</h3>
-      <p>When AGV \\(i\\) bids on task \\(j\\), its score balances task value against travel cost:</p>
-      <p>\\[ \\text{score}_{ij} = v_j \\cdot e^{-\\lambda \\cdot d_{ij}} - \\mu \\cdot d_{ij} \\]</p>
-      <p>where \\(v_j\\) is task value (based on cargo type and priority), \\(d_{ij}\\) is the travel distance from agent \\(i\\) to task \\(j\\), \\(\\lambda\\) is a spatial discount factor, and \\(\\mu\\) is a battery cost coefficient. Each AGV greedily extends its task bundle by inserting the highest-marginal-value unassigned task at its optimal sequence position — stopping when the bundle is full or no profitable task remains.</p>
+      <p>When AGV \\(i\\) bids on task \\(j\\), its marginal score balances task value against travel cost and battery consumption:</p>
+      <p>\\[ \\text{score}_{ij} = v_j \\cdot e^{-\\lambda_j \\cdot d_{ij}} - \\mu_i \\cdot d_{ij} \\]</p>
+      <p>where \\(v_j\\) is task value, \\(d_{ij}\\) is travel distance from agent \\(i\\) to task \\(j\\), \\(\\lambda_j\\) is a per-task spatial discount factor, and \\(\\mu_i\\) is the agent's battery-per-metre coefficient.</p>
 
-      <h3>Consensus Round</h3>
-      <p>After each bidding round, agents share their bids peer-to-peer. The globally highest bidder wins each task; losing agents release their claim and re-bid on remaining tasks. The algorithm converges when no agent changes its bundle — typically within a few rounds.</p>
+      <pre><code class="language-python"># _marginal_bid() — find best insertion position for a task (from cbba.py)
+for pos in range(len(path) + 1):
+    prev_done = agent.availability if pos == 0 else times[pos-1] + prev_task.duration
+    dt_to     = math.hypot(task.x - prev_x, task.y - prev_y) / agent.nom_velocity
 
-      <pre><code class="language-python"># Core bid computation (simplified from cbba.py)
-def compute_bid(agent, task):
-    dist = euclidean(agent.pos, task.pos) + euclidean(task.pos, agent.dock)
-    value = task.reward * math.exp(-LAMBDA * dist) - MU * dist
-    return value if agent.can_accept(task) else -math.inf
+    dist_to_task = math.hypot(task.x - agent.x, task.y - agent.y)
+    reward       = task.task_value * math.exp(-task.discount * dist_to_task)
+    penalty      = agent.bpm * dist_to_task
+    score        = reward - penalty
 
-def consensus_round(agents):
-    for agent in agents:
-        for other in agents:
-            agent.update_from_peer(other.bids)  # merge highest bids
-    for agent in agents:
-        agent.release_lost_tasks()              # drop tasks won by higher bidder
-        agent.rebid()                           # re-bid on released tasks</code></pre>
+    if score > best_bid:
+        best_bid, best_pos = score, pos</code></pre>
+
+      <h3>Bundle Construction & Consensus</h3>
+      <p>Each agent greedily extends its bundle by inserting the highest-marginal-score task at its optimal sequence position, repeating until the bundle hits the depth limit (<code>max_depth = 4</code>) or no profitable task remains. A global consensus round then elects the highest bidder for each task; agents drop tasks they did not win and re-bid on the released tasks. The outer loop repeats until no path changes.</p>
+
+      <pre><code class="language-python"># CBBA.run() — main loop (from cbba.py)
+for _ in range(max_iter):
+    old_paths = [list(p) for p in self.path]
+    for i in range(self.n):
+        self._build_bundle(i)       # Phase 1: greedy bundle extension
+    self._consensus()               # Phase 2: elect global winner per task
+    for i in range(self.n):
+        self._release_lost_tasks(i) # drop tasks won by a higher bidder
+    if all(self.path[i] == old_paths[i] for i in range(self.n)):
+        break                       # converged
+
+# _consensus() — global winner election
+for j in range(self.m):
+    best_agent, best_bid = -1, 0.0
+    for i in range(self.n):
+        if self.local_bid[i][j] > best_bid:
+            best_bid, best_agent = self.local_bid[i][j], i
+    self.winning_agent[j] = best_agent
+    self.winning_bid[j]   = best_bid</code></pre>
 
       <h2>Stage 2 — Path Planning with JPS</h2>
-      <p>Once tasks are assigned, each AGV needs an obstacle-free route through the warehouse grid. A* is optimal but slow at scale. Jump Point Search extends A* with two pruning rules that dramatically reduce node expansions on uniform-cost grids:</p>
+      <p>Once tasks are assigned, each AGV needs an obstacle-free route through the warehouse occupancy grid. A* is optimal but expands too many nodes on large uniform-cost grids. JPS prunes the search space with two rules:</p>
       <ul>
-        <li><strong>Forced-neighbour pruning</strong> — eliminates successors reachable by a shorter path not passing through the current node</li>
-        <li><strong>Jump-point skipping</strong> — compresses long straight-line corridors into a single expansion step</li>
+        <li><strong>Forced-neighbour pruning</strong> — when moving in direction \\((dx, dy)\\), any neighbour reachable by a shorter path not through the current node is pruned</li>
+        <li><strong>Jump-point skipping</strong> — straight-line corridors are compressed into a single recursive step; the algorithm only expands nodes where forced neighbours appear (direction changes)</li>
       </ul>
-      <p>On the 3,000 × 3,000 m warehouse grid, the performance gap vs. A* is substantial:</p>
+
+      <pre><code class="language-python"># _jump() — recursive jump in direction (dx, dy) (from jps.py)
+def _jump(self, x, y, dx, dy, gx, gy):
+    nx, ny = x + dx, y + dy
+    if not self._walkable(nx, ny): return None
+    if (nx, ny) == (gx, gy):      return (nx, ny)
+
+    if dx != 0 and dy != 0:           # diagonal move
+        # forced neighbour check
+        if (self._walkable(nx-dx, ny) and not self._walkable(nx-dx, ny-dy)) or \
+           (self._walkable(nx, ny-dy) and not self._walkable(nx-dx, ny-dy)):
+            return (nx, ny)
+        # recurse along cardinal axes
+        if self._jump(nx, ny, dx, 0, gx, gy) or \
+           self._jump(nx, ny, 0, dy, gx, gy):
+            return (nx, ny)
+    elif dx != 0:                      # horizontal move
+        if (not self._walkable(nx, ny+1) and self._walkable(nx+dx, ny+1)) or \
+           (not self._walkable(nx, ny-1) and self._walkable(nx+dx, ny-1)):
+            return (nx, ny)
+    else:                              # vertical move
+        if (not self._walkable(nx+1, ny) and self._walkable(nx+1, ny+dy)) or \
+           (not self._walkable(nx-1, ny) and self._walkable(nx-1, ny+dy)):
+            return (nx, ny)
+
+    return self._jump(nx, ny, dx, dy, gx, gy)  # keep walking</code></pre>
+
+      <p>The heuristic is octile distance (admissible for 8-directional movement):</p>
+      <p>\\[ h(n) = \\max(|\\Delta x|,\\ |\\Delta y|) + (\\sqrt{2}-1)\\cdot\\min(|\\Delta x|,\\ |\\Delta y|) \\]</p>
+      <p>On the 3,000 × 3,000 m warehouse grid, replacing A* with JPS yields:</p>
 
       <table class="article-table">
         <thead><tr><th>Algorithm</th><th>Memory</th><th>Runtime (single task)</th></tr></thead>
@@ -3002,12 +3118,10 @@ def consensus_round(agents):
           <tr><td><strong>JPS</strong></td><td><strong>6.42 GB</strong></td><td><strong>1,458 s</strong></td></tr>
         </tbody>
       </table>
-
       <p>JPS runs <strong>4.5× faster</strong> and uses <strong>51% less memory</strong> while returning the same optimal path length.</p>
 
       <h2>Simulation & Results</h2>
-      <p>The simulation uses a 3,000 × 3,000 m grid representing a real warehouse layout, with task pickup locations drawn from actual field survey polygon data. 14 AGVs serve 30 tasks (15 heavy, 15 light), each starting and ending at a charging station at the centroid of the charging zone.</p>
-      <p>CBBA assigned all 30 tasks to 8 of the 14 AGVs, consistent with load-balancing constraints. Final KPIs:</p>
+      <p>The simulation uses a 3,000 × 3,000 m grid built from real warehouse field-survey polygon data. 14 AGVs serve 30 tasks (15 heavy, 15 light cargo), each starting and ending at the charging station centroid. CBBA assigned all 30 tasks to 8 of 14 AGVs, consistent with per-agent load constraints. Final KPIs:</p>
 
       <table class="article-table">
         <tbody>
@@ -3019,8 +3133,7 @@ def consensus_round(agents):
       </table>
 
       <h2>Live Dashboard</h2>
-      <p>The interactive dashboard below shows AGVs moving in real time across the warehouse map, a Gantt chart with Travel / Service / Return blocks, and the A* vs JPS algorithm comparison. Hover over any AGV for a tooltip; click a row in the fleet panel to highlight that agent's route.</p>
-
+      <p>The interactive dashboard below shows AGVs moving in real time across the warehouse map, a Gantt chart with Travel / Service / Return blocks, and the A* vs JPS comparison. Hover over any AGV for a tooltip; click a row in the fleet panel to highlight that agent's route.</p>
       <div class="project-demo">
         <iframe src="https://mmmorgandata.github.io/agv-warehouse-scheduling/" title="AGV Warehouse Scheduling Dashboard" loading="lazy" allowfullscreen></iframe>
       </div>
