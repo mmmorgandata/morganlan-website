@@ -2152,12 +2152,12 @@
       <div class="project-emoji">🤖</div>
       <div class="project-name">AGV Scheduling for Cloud Warehouse</div>
       <p class="project-desc">
-        Two-phase intelligent framework for warehouse AGV task allocation.
-        CBBA bidding algorithm for task assignment + Jump Point Search for shortest-path planning.
-        Reduced average delivery time by 15%.
+        Two-stage planning prototype combining task assignment with static-obstacle routing.
+        A reproducible 2×2 benchmark compares greedy and CBBA-style assignment with A* and JPS.
       </p>
       <div class="project-stats">
-        <span class="stat-pill">−15% delivery time</span>
+        <span class="stat-pill">30 / 30 tasks routed</span>
+        <span class="stat-pill">4 baselines compared</span>
       </div>
       <div class="project-tags">
         <span class="tech-tag">Python</span>
@@ -3027,113 +3027,42 @@ def simulate_episode(policy, difficulty=5, max_days=2000):
     meta: 'University-industry collaboration · 2024 · Guangzhou',
     content: `
       <h2>Overview</h2>
-      <p>Modern smart warehouses deploy fleets of AGVs (Automated Guided Vehicles) to replace manual labor in cargo retrieval. Each AGV must travel to a target shelf, carry goods to an unloading dock, and return to its charging station — all while coordinating with 13 other agents to avoid route conflicts.</p>
-      <p>This project solves the resulting multi-agent scheduling problem in two decoupled stages: <strong>CBBA</strong> (Consensus-Based Bundle Algorithm) handles task assignment — deciding which AGV takes which job — then <strong>JPS</strong> (Jump Point Search) plans each agent's collision-free path through the warehouse grid.</p>
+      <p>This project explores a two-stage planning workflow for warehouse retrieval. First, an assignment policy decides which AGV handles each job. A grid planner then finds a route from the agent to the pickup shelf and unloading dock while avoiding static obstacles.</p>
+      <p>The public implementation models 14 AGVs and 30 tasks. It is a planning simulation rather than a production fleet controller: routes are planned independently, so it does not yet prevent two AGVs from occupying the same location at the same time.</p>
 
-      <h2>Stage 1 — Task Assignment with CBBA</h2>
-      <p>CBBA is a distributed auction algorithm: each AGV independently bids on tasks and resolves conflicts through peer-to-peer communication, converging on a conflict-free assignment without any central controller. No single point of failure; the algorithm scales gracefully as fleet size grows.</p>
+      <h2>Stage 1 — Task Assignment</h2>
+      <p>I implemented two assignment policies. <strong>Greedy nearest-task</strong> repeatedly selects the lowest-distance feasible agent–task pair. <strong>CBBA-style bidding</strong> lets each agent construct a task bundle, then resolves competing bids through a shared winner table.</p>
+      <p>The second policy is inspired by the Consensus-Based Bundle Algorithm, but this implementation is centralized: it does not simulate peer-to-peer communication, network failures, or decentralized consensus.</p>
 
-      <h3>Bid Score</h3>
-      <p>When AGV \\(i\\) bids on task \\(j\\), its marginal score balances task value against travel cost and battery consumption:</p>
+      <h3>CBBA-style bid score</h3>
+      <p>For task \\(j\\) and agent \\(i\\), the prototype trades task value against travel distance:</p>
       <p>\\[ \\text{score}_{ij} = v_j \\cdot e^{-\\lambda_j \\cdot d_{ij}} - \\mu_i \\cdot d_{ij} \\]</p>
-      <p>where \\(v_j\\) is task value, \\(d_{ij}\\) is travel distance from agent \\(i\\) to task \\(j\\), \\(\\lambda_j\\) is a per-task spatial discount factor, and \\(\\mu_i\\) is the agent's battery-per-metre coefficient.</p>
+      <p>Here, \\(v_j\\) is task value, \\(d_{ij}\\) is distance from the agent's initial position, and \\(\\lambda_j\\) and \\(\\mu_i\\) control distance discounting. Because the current score is not a full route-aware marginal cost, evaluating it against a simple baseline is essential.</p>
 
-      <pre><code class="language-python"># _marginal_bid() — find best insertion position for a task (from cbba.py)
-for pos in range(len(path) + 1):
-    prev_done = agent.availability if pos == 0 else times[pos-1] + prev_task.duration
-    dt_to     = math.hypot(task.x - prev_x, task.y - prev_y) / agent.nom_velocity
+      <h2>Stage 2 — Static-Obstacle Routing</h2>
+      <p>I implemented both <strong>A*</strong> and <strong>Jump Point Search</strong> on the same eight-directional occupancy grid. JPS prunes symmetric grid paths using forced-neighbour and jump-point rules; A* provides the direct baseline. Both planners use octile distance and return the same route length under the shared movement model.</p>
 
-    dist_to_task = math.hypot(task.x - agent.x, task.y - agent.y)
-    reward       = task.task_value * math.exp(-task.discount * dist_to_task)
-    penalty      = agent.bpm * dist_to_task
-    score        = reward - penalty
-
-    if score > best_bid:
-        best_bid, best_pos = score, pos</code></pre>
-
-      <h3>Bundle Construction & Consensus</h3>
-      <p>Each agent greedily extends its bundle by inserting the highest-marginal-score task at its optimal sequence position, repeating until the bundle hits the depth limit (<code>max_depth = 4</code>) or no profitable task remains. A global consensus round then elects the highest bidder for each task; agents drop tasks they did not win and re-bid on the released tasks. The outer loop repeats until no path changes.</p>
-
-      <pre><code class="language-python"># CBBA.run() — main loop (from cbba.py)
-for _ in range(max_iter):
-    old_paths = [list(p) for p in self.path]
-    for i in range(self.n):
-        self._build_bundle(i)       # Phase 1: greedy bundle extension
-    self._consensus()               # Phase 2: elect global winner per task
-    for i in range(self.n):
-        self._release_lost_tasks(i) # drop tasks won by a higher bidder
-    if all(self.path[i] == old_paths[i] for i in range(self.n)):
-        break                       # converged
-
-# _consensus() — global winner election
-for j in range(self.m):
-    best_agent, best_bid = -1, 0.0
-    for i in range(self.n):
-        if self.local_bid[i][j] > best_bid:
-            best_bid, best_agent = self.local_bid[i][j], i
-    self.winning_agent[j] = best_agent
-    self.winning_bid[j]   = best_bid</code></pre>
-
-      <h2>Stage 2 — Path Planning with JPS</h2>
-      <p>Once tasks are assigned, each AGV needs an obstacle-free route through the warehouse occupancy grid. A* is optimal but expands too many nodes on large uniform-cost grids. JPS prunes the search space with two rules:</p>
-      <ul>
-        <li><strong>Forced-neighbour pruning</strong> — when moving in direction \\((dx, dy)\\), any neighbour reachable by a shorter path not through the current node is pruned</li>
-        <li><strong>Jump-point skipping</strong> — straight-line corridors are compressed into a single recursive step; the algorithm only expands nodes where forced neighbours appear (direction changes)</li>
-      </ul>
-
-      <pre><code class="language-python"># _jump() — recursive jump in direction (dx, dy) (from jps.py)
-def _jump(self, x, y, dx, dy, gx, gy):
-    nx, ny = x + dx, y + dy
-    if not self._walkable(nx, ny): return None
-    if (nx, ny) == (gx, gy):      return (nx, ny)
-
-    if dx != 0 and dy != 0:           # diagonal move
-        # forced neighbour check
-        if (self._walkable(nx-dx, ny) and not self._walkable(nx-dx, ny-dy)) or \
-           (self._walkable(nx, ny-dy) and not self._walkable(nx-dx, ny-dy)):
-            return (nx, ny)
-        # recurse along cardinal axes
-        if self._jump(nx, ny, dx, 0, gx, gy) or \
-           self._jump(nx, ny, 0, dy, gx, gy):
-            return (nx, ny)
-    elif dx != 0:                      # horizontal move
-        if (not self._walkable(nx, ny+1) and self._walkable(nx+dx, ny+1)) or \
-           (not self._walkable(nx, ny-1) and self._walkable(nx+dx, ny-1)):
-            return (nx, ny)
-    else:                              # vertical move
-        if (not self._walkable(nx+1, ny) and self._walkable(nx+1, ny+dy)) or \
-           (not self._walkable(nx-1, ny) and self._walkable(nx-1, ny+dy)):
-            return (nx, ny)
-
-    return self._jump(nx, ny, dx, dy, gx, gy)  # keep walking</code></pre>
-
-      <p>The heuristic is octile distance (admissible for 8-directional movement):</p>
-      <p>\\[ h(n) = \\max(|\\Delta x|,\\ |\\Delta y|) + (\\sqrt{2}-1)\\cdot\\min(|\\Delta x|,\\ |\\Delta y|) \\]</p>
-      <p>On the 3,000 × 3,000 m warehouse grid, replacing A* with JPS yields:</p>
+      <h2>Reproducible 2×2 Benchmark</h2>
+      <p>The public benchmark does not require the original partner survey files. It uses a deterministic seed, a 120 × 120 grid representing a 3,000 × 3,000 m area, three obstacle walls with aisle openings, 14 AGVs, and 30 pickup-and-delivery tasks.</p>
 
       <table class="article-table">
-        <thead><tr><th>Algorithm</th><th>Memory</th><th>Runtime (single task)</th></tr></thead>
+        <thead><tr><th>Assignment</th><th>Planner</th><th>Tasks</th><th>Active AGVs</th><th>Route distance</th><th>Makespan</th><th>Planning</th></tr></thead>
         <tbody>
-          <tr><td>A*</td><td>13.24 GB</td><td>6,532 s</td></tr>
-          <tr><td><strong>JPS</strong></td><td><strong>6.42 GB</strong></td><td><strong>1,458 s</strong></td></tr>
+          <tr><td>Greedy nearest</td><td>A*</td><td>30 / 30</td><td>10</td><td>95,656 m</td><td>16,184 s</td><td>≈0.16 s</td></tr>
+          <tr><td>Greedy nearest</td><td>JPS</td><td>30 / 30</td><td>10</td><td>95,656 m</td><td>16,184 s</td><td>≈0.22 s</td></tr>
+          <tr><td>CBBA-style</td><td>A*</td><td>30 / 30</td><td>9</td><td>95,714 m</td><td>17,286 s</td><td>≈0.16 s</td></tr>
+          <tr><td>CBBA-style</td><td>JPS</td><td>30 / 30</td><td>9</td><td>95,714 m</td><td>17,286 s</td><td>≈0.22 s</td></tr>
         </tbody>
       </table>
-      <p>JPS runs <strong>4.5× faster</strong> and uses <strong>51% less memory</strong> while returning the same optimal path length.</p>
+      <p><small>Planning runtime is one local Apple Silicon / Python 3.12 run and should be remeasured on the target environment.</small></p>
+      <p>The benchmark is deliberately reported without a forced success story. All four combinations route every task. A* and JPS return identical route distances, but this Python JPS implementation is slower at the tested grid size. CBBA-style bidding activates one fewer AGV, while its makespan is 6.8% longer than the greedy baseline. The result identifies where the model needs improvement: route-aware bidding matters more here than choosing a more elaborate grid search.</p>
 
-      <h2>Simulation & Results</h2>
-      <p>The simulation uses a 3,000 × 3,000 m grid built from real warehouse field-survey polygon data. 14 AGVs serve 30 tasks (15 heavy, 15 light cargo), each starting and ending at the charging station centroid. CBBA assigned all 30 tasks to 8 of 14 AGVs, consistent with per-agent load constraints. Final KPIs:</p>
-
-      <table class="article-table">
-        <tbody>
-          <tr><td>Total travel distance (f₁)</td><td>63,139 m</td></tr>
-          <tr><td>Total mission time (f₂)</td><td>64,414 s</td></tr>
-          <tr><td>Total task reward (f₃)</td><td>2,700 pts</td></tr>
-          <tr><td>Tasks assigned</td><td>30 / 30</td></tr>
-        </tbody>
-      </table>
+      <h2>Impact & Limitations</h2>
+      <p>The main outcome is a reproducible evaluation loop: assignment and routing choices can now be compared on task completion, route distance, makespan, fleet utilization, and planning time. The original survey-based scenario is retained separately, but its private spreadsheets are not included in the public repository.</p>
+      <p>Next steps are to enforce battery and task-window feasibility, replace initial-position scoring with true route-marginal bids, and add a time-expanded reservation or conflict-based planner for AGV-to-AGV collision avoidance.</p>
 
       <h2>Live Dashboard</h2>
-      <p>The interactive dashboard below shows AGVs moving in real time across the warehouse map, a Gantt chart with Travel / Service / Return blocks, and the A* vs JPS comparison. Hover over any AGV for a tooltip; click a row in the fleet panel to highlight that agent's route.</p>
+      <p>The dashboard visualizes the original scenario's routes and task timeline. It is a playback of planned paths, not a live warehouse deployment.</p>
       <div class="project-demo">
         <iframe src="https://mmmorgandata.github.io/agv-warehouse-scheduling/" title="AGV Warehouse Scheduling Dashboard" loading="lazy" allowfullscreen></iframe>
       </div>
