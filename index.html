@@ -2152,8 +2152,8 @@
       <div class="project-emoji">🤖</div>
       <div class="project-name">AGV Scheduling for Smart Warehouse</div>
       <p class="project-desc">
-        Built a two-stage AGV scheduling pipeline that combines task assignment with obstacle-aware path planning.
-        Across a reproducible 2×2 benchmark, greedy nearest-task assignment with A* delivered the shortest makespan.
+        Developed through a university–industry collaboration using an enterprise-provided warehouse layout and survey data.
+        The two-stage pipeline benchmarks task assignment and obstacle-aware path planning, with greedy + A* delivering the shortest makespan.
       </p>
       <div class="project-stats">
         <span class="stat-pill">30 / 30 tasks routed</span>
@@ -3026,13 +3026,18 @@ def simulate_episode(policy, difficulty=5, max_days=2000):
     title: 'AGV Scheduling for Smart Warehouse',
     meta: 'University-industry collaboration · 2024 · Guangzhou',
     content: `
+      <h2>Overview</h2>
+      <p>This project grew out of a university–industry collaboration on AGV scheduling for a logistics park in Guangzhou. The enterprise partner provided the warehouse CAD layout and field-survey coordinates; I used them to translate the site into a planning problem that connects task assignment, obstacle-aware routing, and schedule evaluation.</p>
+      <p>The logistics park was still running largely conventional warehouse operations. That made the project less about optimizing an existing robot fleet and more about exploring how its current layout and operating data could support future scheduling and automation.</p>
+      <p>The original scenario remains useful for understanding the operational setting, but its source files are private. To make the work reproducible, the public repository includes a deterministic synthetic scenario with the same planning stages and a controlled 2 × 2 benchmark.</p>
+
       <h2>The Problem</h2>
       <p>A warehouse retrieval job sounds simple: drive to a shelf, pick up the goods, deliver them to the dock. The difficulty appears when thirty jobs arrive together and fourteen AGVs share the same floor. Every decision now has two parts: <em>who should take each job, and how should that vehicle get there?</em></p>
       <p>I treated those as two connected but separable problems. The assignment layer builds a workload for each AGV; the routing layer turns that workload into paths around the warehouse layout. This separation made the system easier to reason about—and, later, much easier to benchmark.</p>
 
       <h2>Two Layers, One Planning Pipeline</h2>
       <p>The simulation starts with 14 AGVs at the charging area and 30 pickup-and-delivery tasks. Each task carries a value, service time, pickup location, and dock destination. The assignment stage produces an ordered task list for every AGV; A* or Jump Point Search then plans each leg on an eight-directional occupancy grid.</p>
-      <p>The original study used logistics-park survey coordinates. For the public repository, I also built a deterministic synthetic scenario so the full comparison can run without private spreadsheets.</p>
+      <p>A separate data-loading layer feeds either the partner-derived layout or the public synthetic scenario into the same pipeline, so the algorithms and evaluation logic do not depend on access to the private spreadsheets.</p>
 
       <h2>Stage 1 — Building the Task Bundles</h2>
       <p>The main assignment policy is inspired by the Consensus-Based Bundle Algorithm. Each AGV scores the tasks it could add, extends its bundle greedily, and then competes for overlapping choices through a shared winner table. For task \\(j\\) and agent \\(i\\), the score trades task value against travel distance:</p>
