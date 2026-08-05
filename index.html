@@ -2150,19 +2150,19 @@
     <!-- AGV Scheduling -->
     <div class="project-card">
       <div class="project-emoji">🤖</div>
-      <div class="project-name">AGV Scheduling for Cloud Warehouse</div>
+      <div class="project-name">AGV Scheduling for Smart Warehouse</div>
       <p class="project-desc">
-        Two-stage planning prototype combining task assignment with static-obstacle routing.
-        A reproducible 2×2 benchmark compares greedy and CBBA-style assignment with A* and JPS.
+        Built a two-stage AGV scheduling pipeline that combines task assignment with obstacle-aware path planning.
+        Across a reproducible 2×2 benchmark, greedy nearest-task assignment with A* delivered the shortest makespan.
       </p>
       <div class="project-stats">
         <span class="stat-pill">30 / 30 tasks routed</span>
-        <span class="stat-pill">4 baselines compared</span>
+        <span class="stat-pill">4 configurations benchmarked</span>
       </div>
       <div class="project-tags">
         <span class="tech-tag">Python</span>
-        <span class="tech-tag">CBBA</span>
-        <span class="tech-tag">JPS</span>
+        <span class="tech-tag">Optimization</span>
+        <span class="tech-tag">A*</span>
       </div>
       <button class="project-read-btn" onclick="openProject('agv')">Read more →</button>
     </div>
@@ -3113,10 +3113,11 @@ for assignment_name, assignment in assignments.items():
       <p><small>The timing column comes from one Apple Silicon / Python 3.12 run. Route and makespan results are deterministic for this seed; wall-clock time will naturally vary by machine.</small></p>
       <p>All four configurations complete the 30 tasks, and A* and JPS agree on route length. On this grid, however, the Python JPS implementation takes slightly longer. The assignment result is more revealing: CBBA-style bidding uses one fewer AGV, but its makespan is 6.8% longer than the greedy baseline.</p>
       <p>The reason becomes clearer when we return to the bid function. It values a task from the agent's starting position rather than measuring the true cost of inserting that task into the existing route. The bundles can therefore look attractive one bid at a time without producing the shortest schedule end to end.</p>
+      <p>For this scenario, <strong>greedy nearest-task assignment with A*</strong> is the strongest default: it completes all 30 tasks with the shortest makespan and the lowest planning time. CBBA-style assignment becomes interesting only when reducing the active fleet matters more than finishing early—it uses one fewer AGV, but increases makespan by 6.8%. JPS produces the same routes as A* and is slightly slower at this scale, so I would keep A* unless larger or more open maps reveal a clearer pruning advantage.</p>
 
-      <h2>What I Would Build Next</h2>
+      <h2>What the Benchmark Revealed</h2>
       <p>The project now has a reproducible path from scenario generation to assignment, routing, evaluation, and visualization. It reports task completion, route distance, makespan, active fleet size, and planning time, with CSV and JSON outputs for follow-up analysis.</p>
-      <p>The next improvement is not a more elaborate search algorithm. I would first make the assignment score route-aware, then enforce battery and time-window feasibility. After that comes the genuinely multi-agent part: adding time to the grid through a reservation table, prioritized planning, or conflict-based search so vehicles can negotiate shared aisles.</p>
+      <p>The comparison also points to the next useful change. The current bid is based on distance from an AGV’s starting position, so it can underestimate the cost of inserting another task into an existing route. A route-aware marginal bid would address the weakness exposed by the benchmark. Collision avoidance is a separate problem: the current planner finds spatial paths, while a deployable multi-AGV system would also need to coordinate when each vehicle enters a shared aisle.</p>
 
       <h2>Exploring the Original Scenario</h2>
       <p>The dashboard below animates the routes and task timeline from the original survey-based scenario. Hover over an AGV for details, follow its path across the map, or compare travel, service, and return time on the Gantt chart.</p>
