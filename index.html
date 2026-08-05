@@ -3039,50 +3039,62 @@ def simulate_episode(policy, difficulty=5, max_days=2000):
       <p>The simulation starts with 14 AGVs at the charging area and 30 pickup-and-delivery tasks. Each task carries a value, service time, pickup location, and dock destination. The assignment stage produces an ordered task list for every AGV; A* or Jump Point Search then plans each leg on an eight-directional occupancy grid.</p>
       <p>A separate data-loading layer feeds either the partner-derived layout or the public synthetic scenario into the same pipeline, so the algorithms and evaluation logic do not depend on access to the private spreadsheets.</p>
 
-      <h2>Stage 1 — Building the Task Bundles</h2>
-      <p>The main assignment policy is inspired by the Consensus-Based Bundle Algorithm. Each AGV scores the tasks it could add, extends its bundle greedily, and then competes for overlapping choices through a shared winner table. For task \\(j\\) and agent \\(i\\), the score trades task value against travel distance:</p>
+      <h2>Stage 1 — Comparing Assignment Policies</h2>
+      <p>I started with an assignment policy inspired by the Consensus-Based Bundle Algorithm. Each AGV scores the tasks it could add, extends its bundle greedily, and then competes for overlapping choices through a shared winner table. For task \\(j\\) and agent \\(i\\), the score trades task value against travel distance:</p>
       <p>\\[ \\text{score}_{ij} = v_j \\cdot e^{-\\lambda_j \\cdot d_{ij}} - \\mu_i \\cdot d_{ij} \\]</p>
       <p>Here, \\(v_j\\) is task value, \\(d_{ij}\\) is the distance from the agent's initial position, and \\(\\lambda_j\\) and \\(\\mu_i\\) control how quickly value is discounted by distance. The public version runs this as a centralized simulation: “consensus” is a global comparison of the bids rather than a peer-to-peer network protocol.</p>
 
-      <pre><code class="language-python"># cbba.py — condensed bundle-building loop
-for _ in range(max_iter):
-    previous_paths = [list(path) for path in self.path]
+      <p>To keep the comparison grounded, I added a second policy with almost no machinery: repeatedly choose the lowest-cost agent–task pair, accounting for travel from the agent's current endpoint to the pickup and then to the dock. After an assignment, that dock becomes the agent's new position:</p>
 
-    for agent_id in range(self.n):
-        self._build_bundle(agent_id)
+      <pre><code class="language-python"># benchmark.py — core of greedy_nearest_assignment()
+while remaining:
+    choices = []
+    for agent in agents:
+        if len(assignments[agent.agent_id]) >= max_tasks:
+            continue
+        ax, ay = positions[agent.agent_id]
+        for task_id in remaining:
+            task = tasks[task_id]
+            distance = math.hypot(task.x - ax, task.y - ay)
+            distance += math.hypot(
+                task.dest_x - task.x, task.dest_y - task.y
+            )
+            choices.append((distance, agent.agent_id, task_id))
 
-    self._consensus()  # highest bid wins each contested task
+    if not choices:
+        break
+    _, agent_id, task_id = min(choices)
+    assignments[agent_id].append(task_id)
+    task = tasks[task_id]
+    positions[agent_id] = (task.dest_x, task.dest_y)
+    remaining.remove(task_id)</code></pre>
 
-    for agent_id in range(self.n):
-        self._release_lost_tasks(agent_id)
-
-    if self.path == previous_paths:
-        break</code></pre>
-
-      <p>To keep the comparison grounded, I added a second policy with almost no machinery: repeatedly assign the nearest remaining task to the cheapest available AGV. It is a deliberately plain baseline, but—as the results show—plain does not mean weak.</p>
+      <p>It is a deliberately plain baseline, but—as the results show—plain does not mean weak.</p>
 
       <h2>Stage 2 — Finding a Way Through the Grid</h2>
       <p>Once the task order is fixed, each pickup and dock becomes a shortest-path query. A* explores neighboring cells directly. Jump Point Search (JPS) keeps the same octile-distance heuristic but skips across symmetric stretches of the grid, stopping at forced neighbours or the goal.</p>
 
-      <pre><code class="language-python"># jps.py — condensed horizontal jump branch
-def _jump(self, x, y, dx, dy, gx, gy, depth=0):
-    nx, ny = x + dx, y + dy
-    if not self._walkable(nx, ny):
-        return None
-    if (nx, ny) == (gx, gy):
-        return (nx, ny)
+      <pre><code class="language-python"># astar.py — core search loop
+while queue:
+    _, cost, current = heapq.heappop(queue)
+    if cost > best_cost[current]:
+        continue
+    if current == goal:
+        return self._reconstruct(came_from, current)
 
-    if dx != 0:
-        if (not self._walkable(nx, ny + 1)
-                and self._walkable(nx + dx, ny + 1)):
-            return (nx, ny)
-        if (not self._walkable(nx, ny - 1)
-                and self._walkable(nx + dx, ny - 1)):
-            return (nx, ny)
+    for neighbour, step_cost in self._neighbours(*current):
+        candidate = cost + step_cost
+        if candidate >= best_cost.get(neighbour, math.inf):
+            continue
 
-    return self._jump(nx, ny, dx, dy, gx, gy, depth + 1)</code></pre>
+        best_cost[neighbour] = candidate
+        came_from[neighbour] = current
+        priority = candidate + self._heuristic(
+            *neighbour, *goal
+        )
+        heapq.heappush(queue, (priority, candidate, neighbour))</code></pre>
 
-      <p>This is the horizontal branch; the implementation applies the same idea vertically and diagonally. Under the shared movement model, A* and JPS should return paths of the same length. Whether JPS is faster depends on the map, grid size, and implementation.</p>
+      <p>Both planners use the same octile-distance heuristic and should return paths of the same length under the shared movement model. JPS is designed to reduce redundant exploration, but whether that pruning pays off depends on the map, grid size, and implementation. In this benchmark, it did not outperform the simpler A* implementation.</p>
 
       <h2>The Baseline Changed the Story</h2>
       <p>I originally focused on CBBA-style assignment and JPS routing as the more sophisticated pair. Adding baselines made the result more interesting. The benchmark crosses both assignment policies with both planners, giving four end-to-end configurations on exactly the same scenario:</p>
