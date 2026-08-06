@@ -3051,7 +3051,6 @@ def simulate_episode(policy, difficulty=5, max_days=2000):
 
       <h2>Two Layers, One Planning Pipeline</h2>
       <p>The simulation starts with 14 AGVs at the charging area and 30 pickup-and-delivery tasks. Each task carries a value, service time, pickup location, and dock destination. The assignment stage produces an ordered task list for every AGV; A* or Jump Point Search then plans each leg on an eight-directional occupancy grid.</p>
-      <p>A separate data-loading layer feeds either the partner-derived layout or the public synthetic scenario into the same pipeline, so the algorithms and evaluation logic do not depend on access to the private spreadsheets.</p>
 
       <h2>Stage 1 — Comparing Assignment Policies</h2>
       <p>I started with an assignment policy inspired by the Consensus-Based Bundle Algorithm. Each AGV scores the tasks it could add, extends its bundle greedily, and then competes for overlapping choices through a shared winner table. For task \\(j\\) and agent \\(i\\), the score trades task value against travel distance:</p>
