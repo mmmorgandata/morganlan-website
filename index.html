@@ -2108,16 +2108,16 @@
 
   <div class="projects-grid">
 
-    <!-- YOLOv8 Traffic Perception -->
+    <!-- Dashcam Traffic Perception -->
     <div class="project-card">
       <div class="project-emoji">🎥</div>
       <div class="project-name">Real-Time Traffic Perception System</div>
       <p class="project-desc">
-        End-to-end dashcam perception pipeline combining improved YOLOv8 detection, DeepSORT multi-object tracking, and monocular distance estimation for real-time rear-end collision warnings.
+        Undergraduate capstone using highway-freight dashcam footage: curated a five-class dataset and integrated a lightweight YOLOv5-based detector, multi-object tracking, and monocular collision-risk estimation.
       </p>
       <div class="project-stats">
-        <span class="stat-pill">YOLOv8 + DeepSORT</span>
-        <span class="stat-pill">Edge Deployment</span>
+        <span class="stat-pill">18,736 extracted frames</span>
+        <span class="stat-pill">5 vehicle classes</span>
       </div>
       <div class="project-tags">
         <span class="tech-tag">Python</span>
@@ -2781,20 +2781,26 @@ const projectData = {
     meta: 'Industry-partnered undergrad capstone · 2024',
     content: `
       <h2>Overview</h2>
-      <p>This project built an end-to-end traffic perception pipeline for dashcam video — combining vehicle detection, multi-object tracking, monocular distance and speed estimation, and real-time collision warning into a unified system deployable on embedded hardware.</p>
-      <p>The central challenge was the accuracy-latency tradeoff: standard YOLOv5 is accurate but parameter-heavy for edge deployment. The goal was to substantially reduce parameter count and improve throughput without sacrificing detection quality on highway traffic scenes — then layer tracking and geometric estimation on top to produce actionable safety warnings.</p>
-      <p>This project was conducted under the supervision of <a href="https://scholar.google.com/citations?user=P2n-dZEAAAAJ" target="_blank" style="color:var(--rausch)">Prof. Pengpeng Xu</a>, whose research spans intelligent transportation systems, deep learning, and computer vision. The system was trained and evaluated on a real-world dashcam dataset collected from highway freight vehicles in Guizhou, China.</p>
+      <p>This undergraduate capstone explored what could be built from a single forward-facing dashcam: detect nearby vehicles, keep their identities across frames, estimate following distance and relative motion, and turn those signals into a simple rear-end collision warning.</p>
+      <p>I started from a lab-provided YOLO and DeepSORT codebase rather than writing an object detector from scratch. My work centered on turning the inherited components into a coherent experiment: preparing the partner-provided video data, testing lightweight detector modifications, adapting the tracking association, and connecting detection, tracking, geometry, and warning logic into one pipeline.</p>
+      <p>The project was completed under the supervision of <a href="https://scholar.google.com/citations?user=P2n-dZEAAAAJ" target="_blank" style="color:var(--rausch)">Prof. Pengpeng Xu</a> using freight-vehicle dashcam recordings from a highway in Guizhou, China.</p>
 
-      <h2>Detection: Improved YOLOv5</h2>
-      <p>The detector retains the original anchor-based YOLOv5s backbone, three-scale feature pyramid, and detection head. Three targeted modifications improve the neck, attention, and loss function.</p>
+      <h2>From Freight Video to a Five-Class Dataset</h2>
+      <p>The thesis reports 18,736 frames extracted after screening the raw footage, split 60% / 20% / 20% for training, validation, and testing. I organized and annotated five road-user classes with LabelImg: car, van, medium truck, truck, and motorcycle. The source recordings and annotations are not included in the public repository.</p>
+
+      <h2>A Note on the Model Name</h2>
+      <p>The thesis used “YOLOv8” terminology, but the archived implementation is built on the older Ultralytics YOLOv5 training stack: it uses anchors, Focus/C3/SPP blocks, and three detection scales. The public repository therefore follows the inspectable code and describes the detector as <strong>YOLOv5-based</strong>. The numerical results below remain labeled as historical thesis results rather than measurements regenerated from the reconstructed public code.</p>
+
+      <h2>Detection Experiments</h2>
+      <p>The public reconstruction retains the anchor-based YOLOv5 backbone and detection head, then implements the three detector changes explored in the capstone: a lighter neck, parameter-free attention, and a different box-regression loss.</p>
 
       <h3>GSConv + VoVGSCSP SlimNeck</h3>
-      <p>Standard neck convolutions and CSP fusion blocks are replaced with <code>GSConv</code> (Group-Shuffle Convolution) blocks assembled into <code>VoVGSCSP</code> modules. GSConv combines a standard convolution branch with a low-cost depthwise branch and channel shuffling. VoVGSCSP aggregates GS bottlenecks through a cross-stage partial structure, reducing redundant neck computation while preserving multi-scale feature fusion for small and distant traffic targets. The final parameter count drops nearly in half.</p>
+      <p>Standard neck convolutions and CSP fusion blocks are replaced with <code>GSConv</code> (Group-Shuffle Convolution) blocks assembled into <code>VoVGSCSP</code> modules. GSConv combines a standard convolution branch with a low-cost depthwise branch and channel shuffling. VoVGSCSP aggregates GS bottlenecks through a cross-stage partial structure, reducing redundant neck computation while preserving multi-scale feature fusion for small and distant traffic targets.</p>
 
       <h3>SimAM Attention</h3>
       <p><code>SimAM</code> is a parameter-free spatial-and-channel attention mechanism. For each feature activation, it derives an importance weight from the activation's deviation from the channel mean and variance:</p>
       <p>\\[ A = \\sigma\\!\\left(\\frac{(X - \\mu_X)^2}{4(\\sigma_X^2 + \\lambda)} + 0.5\\right), \\qquad X_{\\text{out}} = X \\odot A \\]</p>
-      <p>Because SimAM introduces no learnable attention parameters, it improves feature saliency in dense multi-vehicle scenes with negligible compute overhead. Applied after the final backbone block and after each major neck fusion stage (\\(\\lambda = 10^{-4}\\)).</p>
+      <p>Because SimAM introduces no learnable attention parameters, it can emphasize salient activations without adding a separate learned attention network. In the public model configuration it is applied after the final backbone block and after each major neck fusion stage (\\(\\lambda = 10^{-4}\\)).</p>
 
       <h3>Wise-IoU v3 Loss</h3>
       <p>Standard IoU losses treat all training anchors equally. Wise-IoU v3 introduces a non-monotonic dynamic focusing factor that reduces the dominance of both trivial high-quality anchors and extreme low-quality outliers, directing gradient signal toward informative medium-quality examples:</p>
@@ -2802,21 +2808,28 @@ const projectData = {
       <p>\\[ \\mathcal{L}_{\\text{WIoU}} = f(\\beta) \\cdot \\exp\\!\\left(\\frac{d_c^2}{c^2}\\right) \\cdot (1 - \\text{IoU}) \\]</p>
       <p>where \\(d_c\\) is the center distance between predicted and ground-truth boxes and \\(c\\) is the diagonal of the enclosing box. Default: \\(\\gamma = 1.9\\), \\(\\delta = 3.0\\), running-mean momentum \\(= 0.01\\).</p>
 
-      <pre><code class="language-python"># Wise-IoU v3 — dynamic focusing (from utils/loss.py)
-beta  = loss_iou / running_mean_iou          # relative regression quality
-focus = beta / (delta * gamma ** (beta - delta))
-L_wiou = focus * torch.exp(d_center**2 / diagonal**2) * loss_iou</code></pre>
+      <pre><code class="language-python"># utils/loss.py — condensed Wise-IoU focusing
+iou_loss = 1.0 - iou
+distance_attention = torch.exp(
+    center_distance / enclosing_diagonal.detach()
+)
+beta = iou_loss.detach() / self.iou_mean.clamp(min=self.eps)
+focusing = beta / (
+    self.delta * torch.pow(self.gamma, beta - self.delta)
+)
+box_loss = focusing * distance_attention * iou_loss</code></pre>
 
-      <h2>Tracking: Improved DeepSORT</h2>
-      <p>Standard DeepSORT uses plain IoU overlap for the spatial association stage, which degrades when vehicles overlap or move fast. This project upgrades the cost matrix to <code>CIoU</code> distance, which jointly encodes overlap area, center-point offset, and aspect-ratio consistency — giving the tracker richer geometric signal and reducing identity switches in congested highway traffic.</p>
+      <h2>Tracking: Testing CIoU Association</h2>
+      <p>The capstone tested CIoU in DeepSORT's spatial association stage instead of plain IoU. CIoU combines overlap, center-point offset, and aspect-ratio consistency, retaining geometric information even when two boxes do not overlap. The public repository implements this option in the matching cost matrix.</p>
 
-      <pre><code class="language-python"># CIoU association cost matrix (deep_sort/deep_sort/sort/iou_matching.py)
-def ciou_cost(detections, tracks):
-    cost = np.zeros((len(detections), len(tracks)))
-    for i, det in enumerate(detections):
-        for j, trk in enumerate(tracks):
-            cost[i, j] = 1 - ciou(det.bbox, trk.bbox)
-    return cost</code></pre>
+      <pre><code class="language-python"># deep_sort/.../iou_matching.py — condensed CIoU cost
+for row, track_idx in enumerate(track_indices):
+    bbox = tracks[track_idx].to_tlwh()
+    candidates = np.asarray([
+        detections[i].tlwh for i in detection_indices
+    ])
+    similarity = np.clip(ciou(bbox, candidates), -1.0, 1.0)
+    cost_matrix[row, :] = (1.0 - similarity) / 2.0</code></pre>
 
       <h2>Distance, Speed & Collision Warning</h2>
       <figure>
@@ -2832,7 +2845,7 @@ def ciou_cost(detections, tracks):
       <p>The overlay uses a three-level colour scheme: <strong style="color:#22c55e">green</strong> (safe), <strong style="color:#f59e0b">yellow</strong> (TTC &lt; 3 s, low risk), <strong style="color:#ef4444">red</strong> (TTC ≤ 1.5 s, high risk).</p>
 
       <h2>Qualitative Performance Demonstration</h2>
-      <p>The clip below shows the system running on a held-out dashcam sequence. Each tracked vehicle is annotated with its class label, detection confidence, estimated following distance, and relative speed. Warning state updates in real time as the ego vehicle closes on slower traffic ahead.</p>
+      <p>The clip below shows the integrated pipeline on a representative dashcam sequence. Each tracked vehicle is annotated with its class label, detection confidence, estimated following distance, and relative speed. The warning state updates as the estimated time to collision changes.</p>
       <figure>
         <video autoplay loop muted playsinline style="width:100%;border-radius:8px;display:block">
           <source src="https://raw.githubusercontent.com/mmmorgandata/real-time-traffic-perception/main/results/assets/traffic-perception-demo.mp4" type="video/mp4">
@@ -2841,24 +2854,25 @@ def ciou_cost(detections, tracks):
         <figcaption>Detections, multi-object tracks, estimated distances and speeds, and colour-coded TTC warning states on a real highway sequence. Geometric estimates require camera-specific calibration for production use.</figcaption>
       </figure>
 
-      <h2>Results</h2>
+      <h2>Thesis-Reported Results</h2>
+      <p>The following aggregate values are transcribed from the completed thesis. The private dataset, original checkpoints, and raw logs are unavailable in the public repository, so these results should be read as historical experiment records rather than independently reproduced measurements.</p>
       <h3>Detection</h3>
       <table class="article-table">
         <thead>
           <tr><th>Model</th><th>Precision</th><th>Recall</th><th>mAP</th><th>FPS</th><th>Params (M)</th></tr>
         </thead>
         <tbody>
-          <tr><td>YOLOv5 reference</td><td>92.5%</td><td>91.2%</td><td>96.3%</td><td>34.1</td><td>21.9</td></tr>
-          <tr><td>YOLOv7 reference</td><td>93.2%</td><td>92.4%</td><td>95.2%</td><td>45.8</td><td>37.4</td></tr>
-          <tr><td>YOLOv5 baseline</td><td>95.4%</td><td>95.2%</td><td>95.8%</td><td>46.2</td><td>32.6</td></tr>
-          <tr><td><strong>Improved YOLOv5</strong></td><td><strong>96.9%</strong></td><td><strong>96.3%</strong></td><td><strong>97.5%</strong></td><td><strong>48.2</strong></td><td><strong>17.2</strong></td></tr>
+          <tr><td>YOLOv5 comparison</td><td>92.5%</td><td>91.2%</td><td>96.3%</td><td>34.1</td><td>21.9</td></tr>
+          <tr><td>YOLOv7 comparison</td><td>93.2%</td><td>92.4%</td><td>95.2%</td><td>45.8</td><td>37.4</td></tr>
+          <tr><td>Thesis baseline detector</td><td>95.4%</td><td>95.2%</td><td>95.8%</td><td>46.2</td><td>32.6</td></tr>
+          <tr><td><strong>Thesis improved detector</strong></td><td><strong>96.9%</strong></td><td><strong>96.3%</strong></td><td><strong>97.5%</strong></td><td><strong>48.2</strong></td><td><strong>17.2</strong></td></tr>
         </tbody>
       </table>
-      <p>The improved model raises mAP by 1.7 pp over the baseline while cutting parameters from 32.6 M to <strong>17.2 M (−47%)</strong> and improving throughput by 2 FPS.</p>
+      <p>In the thesis table, the improved configuration raises mAP by 1.7 pp over its baseline while reducing the reported parameter count from 32.6 M to <strong>17.2 M (−47%)</strong> and increasing throughput by 2 FPS.</p>
 
       <figure>
-        <img src="https://raw.githubusercontent.com/mmmorgandata/real-time-traffic-perception/main/results/assets/improved_yolov5_training_curves.png" alt="Training and validation curves for improved YOLOv5" />
-        <figcaption>Training and validation dynamics — localization, objectness, and classification losses; precision, recall, mAP@0.5, mAP@0.5:0.95</figcaption>
+        <img src="https://raw.githubusercontent.com/mmmorgandata/real-time-traffic-perception/main/results/assets/improved_yolov5_training_curves.png" alt="Thesis-reported detector training and validation curves" />
+        <figcaption>Thesis-reported training dynamics — localization, objectness, and classification losses; precision, recall, mAP@0.5, mAP@0.5:0.95</figcaption>
       </figure>
 
       <h3>Tracking</h3>
@@ -2867,11 +2881,11 @@ def ciou_cost(detections, tracks):
           <tr><th>Pipeline</th><th>ID Errors</th><th>Missed</th><th>MOTA</th><th>MOTP</th></tr>
         </thead>
         <tbody>
-          <tr><td>Improved YOLOv5 + DeepSORT</td><td>18</td><td>43</td><td>91.43%</td><td>91.34%</td></tr>
-          <tr><td><strong>+ Improved DeepSORT (CIoU)</strong></td><td><strong>11</strong></td><td><strong>29</strong></td><td><strong>93.64%</strong></td><td><strong>94.68%</strong></td></tr>
+          <tr><td>Thesis detector + DeepSORT</td><td>18</td><td>43</td><td>91.43%</td><td>91.34%</td></tr>
+          <tr><td><strong>+ CIoU association</strong></td><td><strong>11</strong></td><td><strong>29</strong></td><td><strong>93.64%</strong></td><td><strong>94.68%</strong></td></tr>
         </tbody>
       </table>
-      <p>Replacing IoU association with CIoU reduced identity errors by <strong>39%</strong> and missed detections by <strong>33%</strong>.</p>
+      <p>The thesis reports that replacing IoU association with CIoU reduced identity errors by <strong>39%</strong> and missed detections by <strong>33%</strong> on its tracking evaluation.</p>
 
       <p>GitHub: <a href="https://github.com/mmmorgandata/real-time-traffic-perception" target="_blank" style="color:var(--rausch)">real-time-traffic-perception →</a></p>
     `
