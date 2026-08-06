@@ -2781,8 +2781,8 @@ const projectData = {
     meta: 'Industry-partnered undergrad capstone · 2024',
     content: `
       <h2>Overview</h2>
-      <p>This project built an end-to-end traffic perception pipeline for forward-facing dashcam video: detect nearby vehicles, keep their identities across frames, estimate following distance and relative motion, and turn those signals into a simple rear-end collision warning.</p>
-      <p>The central challenge was the accuracy–latency trade-off. A warning pipeline has to process each frame quickly enough to remain useful, but aggressive model compression can weaken the small and partially occluded vehicle features that matter most on a highway. The detector therefore keeps multi-scale prediction while concentrating the lightweight redesign in the feature-fusion neck.</p>
+      <p>This undergraduate capstone explored how forward-facing dashcam video could support real-time traffic perception and rear-end collision warning. The goal was to move beyond detecting vehicles in individual frames and build a pipeline that could follow surrounding traffic over time, estimate changes in distance, and translate them into an interpretable warning.</p>
+      <p>I prepared a five-class traffic dataset and developed the prototype around a lightweight YOLOv5 detector, DeepSORT tracking, monocular distance and relative-speed estimation, and time-to-collision logic. The work produced a set of detector experiments and an end-to-end video pipeline that overlays vehicle identities, motion estimates, and color-coded risk levels on the road footage.</p>
       <p>The project was completed under the supervision of <a href="https://scholar.google.com/citations?user=P2n-dZEAAAAJ" target="_blank" style="color:var(--rausch)">Prof. Pengpeng Xu</a> using freight-vehicle dashcam recordings from a highway in Guizhou, China.</p>
 
       <h2>From Freight Video to a Five-Class Dataset</h2>
