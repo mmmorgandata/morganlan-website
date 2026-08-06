@@ -2962,6 +2962,16 @@ for iteration in range(max_iter):
       <h2>Interpretable Policies</h2>
       <p>The optimal policy is a 96-entry lookup table — not a rule anyone can remember. Four interpretable families were tested:</p>
 
+      <table class="article-table">
+        <thead><tr><th>Policy family</th><th>How to read the rule</th></tr></thead>
+        <tbody>
+          <tr><td>Fixed Interval</td><td>Review every 3 or 7 days, regardless of memory strength or item difficulty.</td></tr>
+          <tr><td>Recall Threshold</td><td>Review when predicted recall falls to a chosen target: 90%, 80%, or 70%. Stronger memories naturally receive longer intervals.</td></tr>
+          <tr><td>Difficulty-Aware</td><td>Start from a recall threshold, then adjust the target by item difficulty instead of applying one cutoff to every item.</td></tr>
+          <tr><td>Tiered Rules</td><td>Map half-life ranges directly to memorable intervals: 1, 3, 7, 14, or 30 days.</td></tr>
+        </tbody>
+      </table>
+
       <pre><code class="language-python"># threshold_policies.py — recall-threshold policy
 def halflife_threshold_policy(target_recall=0.9):
     # "Wait until P(recall) drops to target_recall, then review."
@@ -3015,7 +3025,7 @@ def simulate_episode(policy, difficulty=5, max_days=2000):
         <thead><tr><th>Policy</th><th>Avg Cost</th><th>Reviews</th><th>Mastery</th><th>Δ vs Optimal</th></tr></thead>
         <tbody>
           <tr><td><strong>Optimal (VI)</strong></td><td><strong>35.1</strong></td><td>8.7</td><td>100%</td><td>—</td></tr>
-          <tr><td>Difficulty-Aware</td><td>36.0</td><td>8.9</td><td>100%</td><td>+2.7%</td></tr>
+          <tr><td><strong style="color:#16a34a">Difficulty-Aware*</strong></td><td><strong style="color:#16a34a">36.0</strong></td><td>8.9</td><td>100%</td><td><strong style="color:#16a34a">+2.7%</strong></td></tr>
           <tr><td>Threshold p*=0.9</td><td>36.9</td><td>9.4</td><td>100%</td><td>+5.3%</td></tr>
           <tr><td>Threshold p*=0.8</td><td>37.1</td><td>8.4</td><td>100%</td><td>+5.8%</td></tr>
           <tr><td>Threshold p*=0.7</td><td>41.0</td><td>8.4</td><td>100%</td><td>+17.0%</td></tr>
@@ -3024,12 +3034,14 @@ def simulate_episode(policy, difficulty=5, max_days=2000):
           <tr><td>Fixed 7-day</td><td>1,783</td><td>201</td><td>44%</td><td>+4,987%</td></tr>
         </tbody>
       </table>
+      <p><small>* Best-performing interpretable policy.</small></p>
+      <p>Difficulty-Aware is the strongest alternative to the 96-entry optimal policy in this comparison. It reaches 100% mastery with an average cost of 36.0—only 0.9 above the optimum—showing that most of the optimization benefit can be captured by a compact rule.</p>
 
       <h3>Price of Interpretability</h3>
       <p>\\[ \\Delta(\\pi) = \\frac{V^\\pi - V^*}{V^*} \\]</p>
       <p>The difficulty-aware threshold costs only <strong>+2.7% more</strong> than the full MDP solution — a one-sentence rule recovers <strong>97% of the optimization benefit</strong>. Fixed-interval scheduling fails categorically: Fixed 7-day achieves only 44% mastery because weak-memory items forget on nearly every review and never accumulate enough half-life to reach mastery.</p>
 
-      <h3>The Optimal Policy Is Not Monotone</h3>
+      <h3>Additional Finding: The Optimal Policy Is Not Monotone</h3>
       <p>We expected longer intervals as memory strengthens, and shorter intervals for harder items. The optimal policy has <strong>26 violations</strong> in the half-life direction and <strong>25</strong> in the difficulty direction. The cause is the \\((1-p)^{0.97}\\) gain term: the policy sometimes deliberately waits longer — letting recall drop further — because the resulting memory boost more than compensates for the forgetting risk. Simple heuristics miss this non-monotonicity entirely, which explains the residual 2.7% gap.</p>
       <p>GitHub: <a href="https://github.com/mmmorgandata/optimal-flashcard-scheduler" target="_blank" style="color:var(--rausch)">optimal-flashcard-scheduler →</a></p>
     `
