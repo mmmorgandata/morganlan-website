@@ -2789,7 +2789,8 @@ const projectData = {
       <p>After screening the raw footage, I extracted 18,736 frames and split them 60% / 20% / 20% for training, validation, and testing. I organized and annotated five road-user classes with LabelImg: car, van, medium truck, truck, and motorcycle.</p>
 
       <h2>Making the Detector Lightweight</h2>
-      <p>Here, “lightweight” means reducing the parameters and repeated computation between the backbone and detection head—not simply making every layer smaller. The model retains three detection scales, then replaces the more expensive neck fusion blocks with a GSConv-based SlimNeck. SimAM attention and Wise-IoU are added to strengthen feature selection and box regression without undoing the savings from the neck.</p>
+      <p>Here, “lightweight” means reducing parameter count, computation, memory use, and inference latency while preserving detection accuracy—so the model is better suited to real-time inference on in-vehicle devices, edge platforms, or commodity GPUs.</p>
+      <p>The model does not simply make every layer smaller. It retains three detection scales, then replaces the more expensive neck fusion blocks with a GSConv-based SlimNeck. SimAM attention and Wise-IoU are added to strengthen feature selection and box regression without undoing the savings from the neck.</p>
 
       <h3>GSConv + VoVGSCSP SlimNeck</h3>
       <p>Standard neck convolutions and CSP fusion blocks are replaced with <code>GSConv</code> (Group-Shuffle Convolution) blocks assembled into <code>VoVGSCSP</code> modules. GSConv combines a standard convolution branch with a low-cost depthwise branch and channel shuffling. VoVGSCSP aggregates GS bottlenecks through a cross-stage partial structure, reducing redundant neck computation while preserving multi-scale feature fusion for small and distant traffic targets.</p>
